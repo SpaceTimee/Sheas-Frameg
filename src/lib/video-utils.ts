@@ -1,6 +1,7 @@
 import type { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util'
 import type { VideoFile, ProcessingError } from '@/types/video'
+import { insertFilenameSuffix } from '@/lib/utils'
 
 export interface VideoInfo {
   id: string
@@ -73,7 +74,7 @@ export async function processVideo(
     ffmpeg.on('progress', onProgress)
 
     const inputFileName = file.name
-    const outputFileName = `interpolated-${video.id}-${file.name}`
+    const outputFileName = insertFilenameSuffix(inputFileName, `-interpolated-${video.id}`)
 
     await ffmpeg.writeFile(inputFileName, await fetchFile(file))
 

@@ -11,7 +11,7 @@ import { formatBytes, getStatusMessageText, getErrorMessageText } from '@/lib/fo
 import VideoPreview from './video-preview'
 import { useDownloadFile } from '@/hooks/use-download-file'
 import type { VideoFile, VideoStatus } from '@/types/video'
-import { cn } from '@/lib/utils'
+import { cn, insertFilenameSuffix } from '@/lib/utils'
 
 const statusIcons: Record<VideoStatus, React.ReactNode> = {
   queued: <Clock className="h-5 w-5 text-yellow-500" />,
@@ -79,7 +79,9 @@ const ProcessingVideoItem = memo(function ProcessingVideoItem({
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={() => downloadFile(video.processedUrl!, `interpolated-${video.file.name}`)}
+                onClick={() =>
+                  downloadFile(video.processedUrl!, insertFilenameSuffix(video.file.name, '-interpolated'))
+                }
                 aria-label={t('queueCard.downloadAriaLabel')}
               >
                 <Download className="h-4 w-4 text-muted-foreground hover:text-primary" />
