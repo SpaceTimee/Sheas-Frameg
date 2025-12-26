@@ -5,8 +5,15 @@ const nextConfig: NextConfig = {
     config.resolve.fallback = { fs: false, path: false, crypto: false }
     config.module.rules.push({
       test: /\.wasm$/,
-      type: 'asset/resource'
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/wasm/[hash][ext][query]'
+      }
     })
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'MediaInfoModule.wasm': false
+    }
     return config
   },
   headers: async () => {

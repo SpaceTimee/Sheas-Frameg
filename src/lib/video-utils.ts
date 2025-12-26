@@ -8,68 +8,46 @@ export interface VideoInfo {
   fps: number
 }
 
-export const getVideoInfo = (id: string, file: File | Blob): Promise<VideoInfo> => {
-  return new Promise((resolve, reject) => {
-    const video = document.createElement('video')
-    video.preload = 'metadata'
+import MediaInfoFactory from 'mediainfo.js'
 
-    const videoUrl = URL.createObjectURL(file)
-    video.src = videoUrl
+interface MediaInfoTrack {
+  '@type': string
+  Duration?: string
+  FrameRate?: string
+}
 
-    const cleanup = () => {
-      URL.revokeObjectURL(videoUrl)
-      video.remove()
-    }
-
-    video.onloadedmetadata = () => {
-      const duration = video.duration
-
-      let frameCount = 0
-      const frameTimestamps: number[] = []
-      video.muted = true
-
-      const onFrame: VideoFrameRequestCallback = (now, metadata) => {
-        frameCount++
-        if (
-          frameTimestamps.length === 0 ||
-          metadata.mediaTime > frameTimestamps[frameTimestamps.length - 1]
-        ) {
-          frameTimestamps.push(metadata.mediaTime)
-        }
-
-        if (metadata.mediaTime < 2 && frameCount < 60 && !video.ended) {
-          video.requestVideoFrameCallback(onFrame)
-        } else {
-          video.pause()
-          cleanup()
-
-          if (frameTimestamps.length > 1) {
-            const totalTime = frameTimestamps[frameTimestamps.length - 1] - frameTimestamps[0]
-            const avgGap = totalTime / (frameTimestamps.length - 1)
-            const fps = avgGap > 0 ? 1 / avgGap : 30
-            resolve({ id, duration, fps })
-          } else {
-            resolve({ id, duration, fps: 30 })
-          }
-        }
-      }
-
-      video
-        .play()
-        .then(() => {
-          video.requestVideoFrameCallback(onFrame)
-        })
-        .catch((err) => {
-          cleanup()
-          reject({ ...err, id })
-        })
-    }
-
-    video.onerror = (e) => {
-      cleanup()
-      reject({ error: e, id })
-    }
+export const getVideoInfo = async (id: string, file: File | Blob): Promise<VideoInfo> => {
+  const mediainfo = await MediaInfoFactory({
+    format: 'object',
+    locateFile: () => '/MediaInfoModule.wasm'
   })
+
+  if (!mediainfo) {
+    throw new Error('Failed to initialize MediaInfo')
+  }
+
+  try {
+    const result = await mediainfo.analyzeData(
+      () => file.size,
+      async (chunkSize, offset) => {
+        const slice = file.slice(offset, offset + chunkSize)
+        return new Uint8Array(await slice.arrayBuffer())
+      }
+    )
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const track = result?.media?.track?.find((t: any) => t['@type'] === 'Video') as MediaInfoTrack | undefined
+
+    if (!track) throw new Error('No video track found')
+
+    return {
+      id,
+      duration: parseFloat(track.Duration || '0'),
+      fps: parseFloat(track.FrameRate || '30')
+    }
+  } finally {
+    mediainfo.close()
+  }
 }
 
 export async function processVideo(
