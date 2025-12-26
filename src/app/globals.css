@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 60 56% 91%;
+    --foreground: 240 10% 3.9%;
+    --card: 60 56% 96%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 60 56% 96%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 95 42% 60%;
+    --primary-foreground: 240 10% 3.9%;
+    --secondary: 60 30% 88%;
+    --secondary-foreground: 240 10% 3.9%;
+    --muted: 60 30% 88%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 95 32% 80%;
+    --accent-foreground: 240 10% 3.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 60 30% 82%;
+    --input: 60 30% 87%;
+    --ring: 95 42% 60%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 60 30% 95%;
+    --card: 240 10% 5.9%;
+    --card-foreground: 60 30% 95%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 60 30% 95%;
+    --primary: 95 42% 65%;
+    --primary-foreground: 240 10% 3.9%;
+    --secondary: 240 4% 15%;
+    --secondary-foreground: 60 30% 95%;
+    --muted: 240 4% 15%;
+    --muted-foreground: 240 4% 60%;
+    --accent: 95 32% 75%;
+    --accent-foreground: 240 10% 3.9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 15%;
+    --input: 240 4% 15%;
+    --ring: 95 42% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  .font-headline {
+    @apply font-bold tracking-tight;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.8);
+  }
+}
+
+@layer utilities {
+  @keyframes neon-glow {
+    0%,
+    100% {
+      color: hsl(var(--muted-foreground) / 0.5);
+      filter: drop-shadow(0 0 0px hsl(var(--primary) / 0));
+    }
+    50% {
+      color: hsl(var(--primary));
+      filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.7));
+    }
+  }
+
+  .animate-neon-glow {
+    animation: neon-glow 1s ease-in-out;
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "footerText": "Space Time ❤️ Ver. 1.0.0",
+  "jobCard": {
+    "title": "处理视频",
+    "description": "上传视频，选择插帧倍数，然后将它们添加到队列中。所有处理都在你的浏览器中完成",
+    "upload": {
+      "click": "点击上传",
+      "drag": "或拖放视频文件",
+      "formats": "支持 MP4, WEBM, MOV"
+    },
+    "removeFile": "移除 {{fileName}}",
+    "invalidFile": "无效文件",
+    "factor": {
+      "label": "插帧倍数",
+      "placeholder": "选择倍数",
+      "2x": "2 倍帧数",
+      "3x": "3 倍帧数",
+      "4x": "4 倍帧数",
+      "5x": "5 倍帧数",
+      "6x": "6 倍帧数",
+      "8x": "8 倍帧数"
+    },
+    "button": {
+      "loadingFfmpeg": "正在加载视频引擎...",
+      "addingToQueue": "正在添加到队列...",
+      "addToQueue_singular": "将 {{count}} 个文件添加到队列",
+      "addToQueue_plural": "将 {{count}} 个文件添加到队列"
+    }
+  },
+  "queueCard": {
+    "title": "处理队列",
+    "description": "你的视频会按顺序逐一处理，结果将显示在下方",
+    "empty": "你的队列是空的",
+    "factorBadge": "{{factor}} 倍帧数",
+    "downloadAriaLabel": "下载处理后的视频",
+    "removeAriaLabel": "从队列中移除",
+    "cancelAriaLabel": "取消处理"
+  },
+  "status": {
+    "queued": "排队中",
+    "processing": "处理中",
+    "completed": "已完成",
+    "error": "错误"
+  },
+  "toast": {
+    "ffmpegLoadFailed": {
+      "title": "视频引擎加载失败",
+      "description": "无法加载视频引擎。请尝试刷新页面"
+    },
+    "invalidFileType": {
+      "title": "无效的文件类型",
+      "description": "文件 \"{{fileName}}\" 已被跳过，因为它不是一个有效的视频文件"
+    },
+    "noFilesSelected": {
+      "title": "未选择有效文件",
+      "description": "请选择一个或多个要处理的有效视频文件"
+    },
+    "errorReadingFile": {
+      "title": "读取文件 {{fileName}} 出错",
+      "description": "无法从此视频文件读取元数据。该文件已被标记为无效"
+    },
+    "cannotRemove": {
+      "title": "无法移除",
+      "description": "请等待当前视频处理完成"
+    }
+  },
+  "errors": {
+    "unknownProcessingError": "处理过程中发生未知错误: {{message}}",
+    "sharedArrayBufferError": "浏览器配置错误 (SharedArrayBuffer)。请确保使用 HTTPS"
+  }
+}

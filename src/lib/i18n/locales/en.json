@@ -1,0 +1,71 @@
+{
+  "footerText": "Space Time ❤️ Ver. 1.0.0",
+  "jobCard": {
+    "title": "Process Videos",
+    "description": "Upload videos, choose an interpolation factor, and add them to the queue. All processing is done in your browser",
+    "upload": {
+      "click": "Click to upload",
+      "drag": "or drag and drop video files",
+      "formats": "MP4, WEBM, MOV"
+    },
+    "removeFile": "Remove {{fileName}}",
+    "invalidFile": "Invalid File",
+    "factor": {
+      "label": "Interpolation Factor",
+      "placeholder": "Select factor",
+      "2x": "2x Frames",
+      "3x": "3x Frames",
+      "4x": "4x Frames",
+      "5x": "5x Frames",
+      "6x": "6x Frames",
+      "8x": "8x Frames"
+    },
+    "button": {
+      "loadingFfmpeg": "Loading Video Engine...",
+      "addingToQueue": "Adding to Queue...",
+      "addToQueue_singular": "Add {{count}} File to Queue",
+      "addToQueue_plural": "Add {{count}} Files to Queue"
+    }
+  },
+  "queueCard": {
+    "title": "Processing Queue",
+    "description": "Your videos are processed one by one. The results will appear below",
+    "empty": "Your queue is empty",
+    "factorBadge": "{{factor}}x Frames",
+    "downloadAriaLabel": "Download processed video",
+    "removeAriaLabel": "Remove from queue",
+    "cancelAriaLabel": "Cancel processing"
+  },
+  "status": {
+    "queued": "queued",
+    "processing": "processing",
+    "completed": "completed",
+    "error": "error"
+  },
+  "toast": {
+    "ffmpegLoadFailed": {
+      "title": "Video Engine Load Failed",
+      "description": "Could not load the video engine. Please try refreshing the page"
+    },
+    "invalidFileType": {
+      "title": "Invalid File Type",
+      "description": "File \"{{fileName}}\" was skipped as it's not a valid video file"
+    },
+    "noFilesSelected": {
+      "title": "No valid files selected",
+      "description": "Please select one or more valid video files to process"
+    },
+    "errorReadingFile": {
+      "title": "Error Reading {{fileName}}",
+      "description": "Could not read metadata from this video file. It has been marked as invalid"
+    },
+    "cannotRemove": {
+      "title": "Cannot Remove",
+      "description": "Please wait for the current video to finish processing"
+    }
+  },
+  "errors": {
+    "unknownProcessingError": "An unknown error occurred: {{message}}",
+    "sharedArrayBufferError": "Browser configuration error (SharedArrayBuffer). Ensure HTTPS is used"
+  }
+}
