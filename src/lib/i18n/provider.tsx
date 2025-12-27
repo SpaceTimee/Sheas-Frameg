@@ -7,7 +7,6 @@ import zh from './locales/zh.json'
 type Language = 'en' | 'zh'
 
 type Translations = {
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   [key: string]: any
 }
 

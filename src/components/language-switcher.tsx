@@ -23,11 +23,7 @@ export default function LanguageSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuRadioGroup
-          value={language}
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-          onValueChange={(value) => setLanguage(value as any)}
-        >
+        <DropdownMenuRadioGroup value={language} onValueChange={(value) => setLanguage(value as any)}>
           <DropdownMenuRadioItem value="en">English</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="zh">简体中文</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>

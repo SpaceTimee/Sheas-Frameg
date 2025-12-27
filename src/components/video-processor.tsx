@@ -24,7 +24,7 @@ function updateSelectedFilesWithMetadata(
           newMap.set(id, { ...originalFile, duration, fps })
         }
       } else {
-        const { id } = result.reason as any // eslint-disable-line @typescript-eslint/no-explicit-any
+        const { id } = result.reason as any
         const originalFile = newMap.get(id)
         if (originalFile) {
           globalToast({

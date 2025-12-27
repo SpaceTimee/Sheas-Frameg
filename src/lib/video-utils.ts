@@ -36,7 +36,6 @@ export const getVideoInfo = async (id: string, file: File | Blob): Promise<Video
       }
     )
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const track = result?.media?.track?.find((t: any) => t['@type'] === 'Video') as MediaInfoTrack | undefined
 
     if (!track) throw new Error('No video track found')
@@ -96,7 +95,7 @@ export async function processVideo(
 
     if (result === 0) {
       const data = await ffmpeg.readFile(outputFileName)
-      const blob = new Blob([data as any], { type: 'video/mp4' }) // eslint-disable-line @typescript-eslint/no-explicit-any
+      const blob = new Blob([data as any], { type: 'video/mp4' })
 
       const processedUrl = URL.createObjectURL(blob)
       const { duration: processedDuration, fps: processedFps } = await getVideoInfo(
@@ -117,7 +116,6 @@ export async function processVideo(
     } else {
       throw new Error(`FFmpeg exited with a non-zero status: ${result}`)
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (cancellationRef.current) {
       return
