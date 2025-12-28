@@ -1,15 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { FileVideo, ChevronUp, Loader2, ArrowDownCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { FileVideo, ChevronUp, Loader2, ArrowDownCircle, AlertCircle, X } from 'lucide-react'
-import SelectedFileItem from './selected-file-item'
 import { useLanguage } from '@/lib/i18n/provider'
 import { cn } from '@/lib/utils'
 import type { SelectedFile } from '@/types/video'
+import SelectedFileItem from './selected-item'
+import FileUploader from './file-uploader'
+import QueueLimitWarning from './queue-limit-warning'
 
 interface JobCardProps {
   isJobCardOpen: boolean
@@ -43,7 +44,6 @@ export default function JobCard({
   isArrowGlowing
 }: JobCardProps) {
   const { t } = useLanguage()
-  const [showWarning, setShowWarning] = useState(true)
   const hasValidFiles = selectedFiles.some((f) => !f.error)
 
   const getButtonText = () => {
@@ -82,51 +82,11 @@ export default function JobCard({
           <CollapsibleContent>
             <div className="overflow-hidden transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
               <CardDescription className="px-6 pb-4">{t('jobCard.description')}</CardDescription>
-              {showWarning && (
-                <div className="px-6 pb-4 pt-0 animate-in fade-in slide-in-from-top-1 duration-300">
-                  <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-md border border-border/50">
-                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-                    <p className="flex-1">{t('queueCard.limitationWarning')}</p>
-                    <button
-                      onClick={() => setShowWarning(false)}
-                      className="text-muted-foreground/70 hover:text-foreground transition-colors -mr-1 p-0.5 rounded-sm hover:bg-background/50"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                      <span className="sr-only">Close</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+
+              <QueueLimitWarning />
+
               <CardContent className="space-y-6 pt-2">
-                <div
-                  className="flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-lg cursor-pointer border-border hover:border-primary/50 bg-background hover:bg-accent/10 transition-colors"
-                  onClick={() => fileInputRef.current?.click()}
-                  onDrop={(e) => {
-                    e.preventDefault()
-                    onFileChange(e.dataTransfer.files)
-                  }}
-                  onDragOver={(e) => e.preventDefault()}
-                >
-                  <FileVideo className="w-12 h-12 text-muted-foreground" />
-                  <p className="mt-4 text-sm text-center text-muted-foreground">
-                    <Button
-                      variant="link"
-                      className="font-semibold text-primary p-0 h-auto inline-block pointer-events-none"
-                    >
-                      {t('jobCard.upload.click')}
-                    </Button>{' '}
-                    {t('jobCard.upload.drag')}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{t('jobCard.upload.formats')}</p>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="hidden"
-                    accept="video/*"
-                    onChange={(e) => onFileChange(e.target.files)}
-                    multiple
-                  />
-                </div>
+                <FileUploader fileInputRef={fileInputRef} onFileChange={onFileChange} />
 
                 {selectedFiles.length > 0 && (
                   <div className="space-y-4">

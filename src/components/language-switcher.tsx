@@ -1,5 +1,6 @@
 'use client'
 
+import { Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,7 +9,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Globe } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/provider'
 
 export default function LanguageSwitcher() {
@@ -23,7 +23,7 @@ export default function LanguageSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuRadioGroup value={language} onValueChange={(value) => setLanguage(value as any)}>
+        <DropdownMenuRadioGroup value={language} onValueChange={(value) => setLanguage(value as 'en' | 'zh')}>
           <DropdownMenuRadioItem value="en">English</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="zh">简体中文</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>

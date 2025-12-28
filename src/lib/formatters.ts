@@ -1,7 +1,5 @@
-import type { ProcessingError } from '@/types/video'
-
-type VideoStatus = 'queued' | 'processing' | 'completed' | 'error'
-type Translator = (key: string, replacements?: { [key: string]: string | number }) => string
+import type { ProcessingError, VideoStatus } from '@/types/video'
+import type { Translator } from '@/lib/i18n/provider'
 
 export const formatBytes = (bytes: number, decimals = 2) => {
   if (bytes === 0) return '0 Bytes'

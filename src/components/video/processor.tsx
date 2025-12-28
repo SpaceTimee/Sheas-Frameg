@@ -1,18 +1,20 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import type { FFmpeg } from '@ffmpeg/ffmpeg'
-import { toast as globalToast } from '@/hooks/use-toast'
+import { toast } from '@/hooks/use-toast'
 import { useLanguage } from '@/lib/i18n/provider'
 import { getVideoInfo, processVideo, type VideoInfo } from '@/lib/video-utils'
+import { useFFmpeg } from '@/hooks/use-ffmpeg'
 import JobCard from './job-card'
 import QueueCard from './queue-card'
 import type { SelectedFile, VideoFile } from '@/types/video'
 
+import { Translator } from '@/lib/i18n/provider'
+
 function updateSelectedFilesWithMetadata(
   results: PromiseSettledResult<VideoInfo>[],
   setSelectedFiles: React.Dispatch<React.SetStateAction<Map<string, SelectedFile>>>,
-  t: (key: string, replacements?: { [key: string]: string | number }) => string
+  t: Translator
 ) {
   setSelectedFiles((prev) => {
     const newMap = new Map(prev)
@@ -24,17 +26,20 @@ function updateSelectedFilesWithMetadata(
           newMap.set(id, { ...originalFile, duration, fps })
         }
       } else {
-        const { id } = result.reason as any
-        const originalFile = newMap.get(id)
-        if (originalFile) {
-          globalToast({
-            variant: 'destructive',
-            title: t('toast.errorReadingFile.title', {
-              fileName: originalFile.file.name
-            }),
-            description: t('toast.errorReadingFile.description')
-          })
-          newMap.set(id, { ...originalFile, error: true })
+        const reason = result.reason as { id?: string } | undefined
+        const id = reason?.id
+        if (id) {
+          const originalFile = newMap.get(id)
+          if (originalFile) {
+            toast({
+              variant: 'destructive',
+              title: t('toast.errorReadingFile.title', {
+                fileName: originalFile.file.name
+              }),
+              description: t('toast.errorReadingFile.description')
+            })
+            newMap.set(id, { ...originalFile, error: true })
+          }
         }
       }
     })
@@ -48,7 +53,9 @@ export default function VideoProcessor() {
   const [selectedFiles, setSelectedFiles] = useState<Map<string, SelectedFile>>(new Map())
   const [interpolationFactor, setInterpolationFactor] = useState<number>(2)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const ffmpegRef = useRef<FFmpeg | null>(null)
+
+  const { ffmpegRef, isLoaded: isFfmpegLoaded, reset: resetFfmpeg } = useFFmpeg()
+
   const currentProcessingId = useRef<string | null>(null)
   const cancellationRef = useRef(false)
   const [isAddingToQueue, setIsAddingToQueue] = useState(false)
@@ -59,41 +66,13 @@ export default function VideoProcessor() {
   const isProcessing = Array.from(videos.values()).some((v) => v.status === 'processing')
 
   useEffect(() => {
-    const loadFfmpeg = async () => {
-      try {
-        if (ffmpegRef.current?.loaded) {
-          return
-        }
-        const { FFmpeg } = await import('@ffmpeg/ffmpeg')
-        const ffmpeg = new FFmpeg()
-        ffmpeg.on('log', () => {})
-        await ffmpeg.load()
-        ffmpegRef.current = ffmpeg
-      } catch {
-        ffmpegRef.current = null
-        globalToast({
-          variant: 'destructive',
-          title: t('toast.ffmpegLoadFailed.title'),
-          description: t('toast.ffmpegLoadFailed.description')
-        })
-      }
-    }
-
-    loadFfmpeg()
-
-    return () => {
-      ffmpegRef.current?.terminate()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
     if (isArrowGlowing) {
       const timer = setTimeout(() => {
         setIsArrowGlowing(false)
       }, 1000)
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [isArrowGlowing])
 
   const handleFileChange = useCallback(
@@ -103,16 +82,15 @@ export default function VideoProcessor() {
       const videoFiles = [...files].filter((file) => {
         if (file.type.startsWith('video/')) {
           return true
-        } else {
-          globalToast({
-            variant: 'destructive',
-            title: t('toast.invalidFileType.title'),
-            description: t('toast.invalidFileType.description', {
-              fileName: file.name
-            })
-          })
-          return false
         }
+        toast({
+          variant: 'destructive',
+          title: t('toast.invalidFileType.title'),
+          description: t('toast.invalidFileType.description', {
+            fileName: file.name
+          })
+        })
+        return false
       })
 
       const newFilesMap = new Map(
@@ -137,7 +115,6 @@ export default function VideoProcessor() {
       const infoPromises = Array.from(newFilesMap.values()).map((file) => getVideoInfo(file.id, file.file))
 
       const results = await Promise.allSettled(infoPromises)
-
       updateSelectedFilesWithMetadata(results, setSelectedFiles, t)
     },
     [t]
@@ -147,7 +124,7 @@ export default function VideoProcessor() {
     const validFiles = Array.from(selectedFiles.values()).filter((f) => !f.error)
 
     if (validFiles.length === 0) {
-      globalToast({
+      toast({
         variant: 'destructive',
         title: t('toast.noFilesSelected.title'),
         description: t('toast.noFilesSelected.description')
@@ -202,10 +179,13 @@ export default function VideoProcessor() {
         const onProgress = ({ time }: { time: number }) => {
           if (currentProcessingId.current !== nextVideo.id) return
           const timeInSeconds = time / 1_000_000
-          const progressPercentage = (timeInSeconds / nextVideo.duration!) * 100
-          updateVideo(nextVideo.id, {
-            progress: Math.min(progressPercentage, 100)
-          })
+
+          if (nextVideo.duration) {
+            const progressPercentage = (timeInSeconds / nextVideo.duration) * 100
+            updateVideo(nextVideo.id, {
+              progress: Math.min(progressPercentage, 100)
+            })
+          }
         }
 
         processVideo(ffmpegRef.current, nextVideo, updateVideo, cancellationRef, onProgress).finally(() => {
@@ -217,7 +197,7 @@ export default function VideoProcessor() {
     }, 100)
 
     return () => clearTimeout(timeoutId)
-  }, [videos, isProcessing, updateVideo, forceProcessTrigger])
+  }, [videos, isProcessing, updateVideo, forceProcessTrigger, ffmpegRef])
 
   useEffect(() => {
     const videosToUpdate = Array.from(videos.values()).filter(
@@ -227,9 +207,12 @@ export default function VideoProcessor() {
     if (videosToUpdate.length > 0) {
       const fetchAndUpdateMetadata = async () => {
         const infoPromises = videosToUpdate.map((video) =>
-          getVideoInfo(video.id, video.file).catch(() => {
-            return { id: video.id, error: true as const, duration: 0, fps: 0 }
-          })
+          getVideoInfo(video.id, video.file).catch(() => ({
+            id: video.id,
+            error: true as const,
+            duration: 0,
+            fps: 0
+          }))
         )
 
         const results = await Promise.all(infoPromises)
@@ -258,19 +241,12 @@ export default function VideoProcessor() {
   const handleRemoveSelectedFile = useCallback((id: string) => {
     setSelectedFiles((prev) => {
       const itemToRemove = prev.get(id)
-      if (itemToRemove) {
-        try {
-          if (itemToRemove.previewUrl) {
-            URL.revokeObjectURL(itemToRemove.previewUrl)
-          }
-        } catch {
-          // Silent fail
-        }
-        const newMap = new Map(prev)
-        newMap.delete(id)
-        return newMap
+      if (itemToRemove?.previewUrl) {
+        URL.revokeObjectURL(itemToRemove.previewUrl)
       }
-      return prev
+      const newMap = new Map(prev)
+      newMap.delete(id)
+      return newMap
     })
   }, [])
 
@@ -278,16 +254,9 @@ export default function VideoProcessor() {
     setVideos((prev) => {
       const itemToRemove = prev.get(id)
       if (itemToRemove) {
-        try {
-          if (itemToRemove.originalUrl) {
-            URL.revokeObjectURL(itemToRemove.originalUrl)
-          }
-          if (itemToRemove.processedUrl) {
-            URL.revokeObjectURL(itemToRemove.processedUrl)
-          }
-        } catch {
-          // Silent fail
-        }
+        if (itemToRemove.originalUrl) URL.revokeObjectURL(itemToRemove.originalUrl)
+        if (itemToRemove.processedUrl) URL.revokeObjectURL(itemToRemove.processedUrl)
+
         const newMap = new Map(prev)
         newMap.delete(id)
         return newMap
@@ -301,58 +270,44 @@ export default function VideoProcessor() {
       if (currentProcessingId.current !== id) return
 
       cancellationRef.current = true
-
       handleRemoveVideo(id)
 
-      ffmpegRef.current?.terminate()
-
-      ffmpegRef.current = null
-      const loadFfmpeg = async () => {
-        try {
-          if (ffmpegRef.current?.loaded) {
-            return
-          }
-          const { FFmpeg } = await import('@ffmpeg/ffmpeg')
-          const ffmpeg = new FFmpeg()
-          ffmpeg.on('log', () => {})
-          await ffmpeg.load()
-          ffmpegRef.current = ffmpeg
-        } catch {
-          ffmpegRef.current = null
-          globalToast({
-            variant: 'destructive',
-            title: t('toast.ffmpegLoadFailed.title'),
-            description: t('toast.ffmpegLoadFailed.description')
-          })
-        }
-      }
-      await loadFfmpeg()
+      await resetFfmpeg()
       setForceProcessTrigger((r) => !r)
     },
-    [handleRemoveVideo, t]
+    [handleRemoveVideo, resetFfmpeg]
   )
 
-  const handleToggleSelectedFilePlayPause = useCallback((id: string) => {
-    setSelectedFiles((prev) => {
-      const newMap = new Map(prev)
-      const item = newMap.get(id)
-      if (item) {
-        newMap.set(id, { ...item, isPaused: !item.isPaused })
-      }
-      return newMap
-    })
-  }, [])
+  const togglePause = useCallback(
+    <T extends { isPaused: boolean }>(
+      id: string,
+      setMap: React.Dispatch<React.SetStateAction<Map<string, T>>>
+    ) => {
+      setMap((prev) => {
+        const newMap = new Map(prev)
+        const item = newMap.get(id)
+        if (item) {
+          newMap.set(id, { ...item, isPaused: !item.isPaused })
+        }
+        return newMap
+      })
+    },
+    []
+  )
 
-  const handleToggleVideoPlayPause = useCallback((id: string) => {
-    setVideos((prev) => {
-      const newMap = new Map(prev)
-      const item = newMap.get(id)
-      if (item) {
-        newMap.set(id, { ...item, isPaused: !item.isPaused })
-      }
-      return newMap
-    })
-  }, [])
+  const handleToggleSelectedFilePlayPause = useCallback(
+    (id: string) => {
+      togglePause(id, setSelectedFiles)
+    },
+    [togglePause]
+  )
+
+  const handleToggleVideoPlayPause = useCallback(
+    (id: string) => {
+      togglePause(id, setVideos)
+    },
+    [togglePause]
+  )
 
   const selectedFilesArray = Array.from(selectedFiles.values())
   const videosArray = Array.from(videos.values())
@@ -371,7 +326,7 @@ export default function VideoProcessor() {
         setInterpolationFactor={setInterpolationFactor}
         onAddToQueue={handleAddToQueue}
         isAddingToQueue={isAddingToQueue}
-        isFfmpegLoaded={!!ffmpegRef.current?.loaded}
+        isFfmpegLoaded={isFfmpegLoaded}
         isArrowGlowing={isArrowGlowing}
       />
       <QueueCard

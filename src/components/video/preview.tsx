@@ -3,7 +3,7 @@
 import { memo, useRef, useEffect, useCallback } from 'react'
 import { EyeOff } from 'lucide-react'
 
-function VideoPreviewComponent({
+function VideoPreview({
   url,
   isPaused,
   onTogglePlayPause
@@ -62,5 +62,4 @@ function VideoPreviewComponent({
   )
 }
 
-const VideoPreview = memo(VideoPreviewComponent)
-export default VideoPreview
+export default memo(VideoPreview)

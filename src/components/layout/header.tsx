@@ -1,12 +1,12 @@
 'use client'
 
-import { Github } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import LanguageSwitcher from '../language-switcher'
-import { useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
+import { Github } from 'lucide-react'
 import { Button } from '../ui/button'
+import LanguageSwitcher from '../language-switcher'
+import { cn } from '@/lib/utils'
 import appIcon from '@/app/icon.png'
 
 export default function Header() {

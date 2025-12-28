@@ -1,11 +1,11 @@
 'use client'
 
+import dynamic from 'next/dynamic'
+import { Loader2 } from 'lucide-react'
 import Header from '@/components/layout/header'
 import Footer from '@/components/layout/footer'
-import { Loader2 } from 'lucide-react'
-import dynamic from 'next/dynamic'
 
-const VideoProcessor = dynamic(() => import('@/components/video-processor'), {
+const VideoProcessor = dynamic(() => import('@/components/video/processor'), {
   ssr: false,
   loading: () => (
     <div className="flex flex-1 flex-col items-center justify-center">

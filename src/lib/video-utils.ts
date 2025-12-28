@@ -2,6 +2,7 @@ import type { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util'
 import type { VideoFile, ProcessingError } from '@/types/video'
 import { insertFilenameSuffix } from '@/lib/utils'
+import MediaInfoFactory from 'mediainfo.js'
 
 export interface VideoInfo {
   id: string
@@ -9,12 +10,16 @@ export interface VideoInfo {
   fps: number
 }
 
-import MediaInfoFactory from 'mediainfo.js'
-
 interface MediaInfoTrack {
   '@type': string
   Duration?: string
   FrameRate?: string
+}
+
+interface MediaInfoResult {
+  media?: {
+    track: MediaInfoTrack[]
+  }
 }
 
 export const getVideoInfo = async (id: string, file: File | Blob): Promise<VideoInfo> => {
@@ -28,15 +33,15 @@ export const getVideoInfo = async (id: string, file: File | Blob): Promise<Video
   }
 
   try {
-    const result = await mediainfo.analyzeData(
+    const result = (await mediainfo.analyzeData(
       () => file.size,
       async (chunkSize, offset) => {
         const slice = file.slice(offset, offset + chunkSize)
         return new Uint8Array(await slice.arrayBuffer())
       }
-    )
+    )) as MediaInfoResult
 
-    const track = result?.media?.track?.find((t: any) => t['@type'] === 'Video') as MediaInfoTrack | undefined
+    const track = result?.media?.track?.find((t) => t['@type'] === 'Video')
 
     if (!track) throw new Error('No video track found')
 
@@ -56,7 +61,7 @@ export async function processVideo(
   updateVideo: (id: string, updates: Partial<VideoFile>) => void,
   cancellationRef: { current: boolean },
   onProgress: (progress: { time: number }) => void
-) {
+): Promise<void> {
   const { duration, fps, file } = video
   if (!duration || !fps) {
     const error: ProcessingError = {
@@ -95,7 +100,7 @@ export async function processVideo(
 
     if (result === 0) {
       const data = await ffmpeg.readFile(outputFileName)
-      const blob = new Blob([data as any], { type: 'video/mp4' })
+      const blob = new Blob([data as unknown as BlobPart], { type: 'video/mp4' })
 
       const processedUrl = URL.createObjectURL(blob)
       const { duration: processedDuration, fps: processedFps } = await getVideoInfo(
@@ -106,7 +111,7 @@ export async function processVideo(
       updateVideo(video.id, {
         status: 'completed',
         progress: 100,
-        processedUrl: processedUrl,
+        processedUrl,
         duration: processedDuration,
         fps: processedFps
       })
@@ -116,12 +121,14 @@ export async function processVideo(
     } else {
       throw new Error(`FFmpeg exited with a non-zero status: ${result}`)
     }
-  } catch (error: any) {
+  } catch (err: unknown) {
     if (cancellationRef.current) {
       return
     }
 
+    const error = err as Error
     let processingError: ProcessingError
+
     if (error?.message?.includes('SharedArrayBuffer')) {
       processingError = { type: 'shared-array-buffer' }
     } else {

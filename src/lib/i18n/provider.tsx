@@ -6,21 +6,23 @@ import zh from './locales/zh.json'
 
 type Language = 'en' | 'zh'
 
-type Translations = {
-  [key: string]: any
-}
+type NestedTranslation = string | { [key: string]: NestedTranslation }
+
+type Translations = Record<string, NestedTranslation>
 
 const translations: Record<Language, Translations> = {
-  en,
-  zh
+  en: en as Translations,
+  zh: zh as Translations
 }
 
 const FALLBACK_LANGUAGE: Language = 'en'
 
+export type Translator = (key: string, replacements?: { [key: string]: string | number }) => string
+
 type LanguageContextType = {
   language: Language
   setLanguage: (language: Language | ((lang: Language) => Language)) => void
-  t: (key: string, replacements?: { [key: string]: string | number }) => string
+  t: Translator
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
@@ -30,10 +32,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const t = useCallback(
     (key: string, replacements?: { [key: string]: string | number }) => {
-      const getNestedTranslation = (trans: Translations, key: string): string | undefined => {
-        return key.split('.').reduce((obj, keyPart) => (obj ? obj[keyPart] : undefined), trans) as unknown as
-          | string
-          | undefined
+      const getNestedTranslation = (trans: Translations, path: string): string | undefined => {
+        const keys = path.split('.')
+        let current: NestedTranslation | undefined = trans
+
+        for (const k of keys) {
+          if (current && typeof current === 'object' && k in current) {
+            current = current[k]
+          } else {
+            return undefined
+          }
+        }
+
+        return typeof current === 'string' ? current : undefined
       }
 
       const primaryTranslation = getNestedTranslation(translations[language], key)

@@ -1,15 +1,15 @@
 'use client'
 
 import { memo } from 'react'
+import { Loader2, Trash2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Separator } from './ui/separator'
+import { Separator } from '@/components/ui/separator'
 import { useLanguage } from '@/lib/i18n/provider'
 import { formatBytes } from '@/lib/formatters'
-import VideoPreview from './video-preview'
-import { Loader2, Trash2, AlertCircle } from 'lucide-react'
 import type { SelectedFile } from '@/types/video'
+import VideoPreview from './preview'
 
-function SelectedFileItemComponent({
+function SelectedFileItem({
   item,
   onRemove,
   onTogglePlayPause
@@ -67,5 +67,4 @@ function SelectedFileItemComponent({
   )
 }
 
-const SelectedFileItem = memo(SelectedFileItemComponent)
-export default SelectedFileItem
+export default memo(SelectedFileItem)

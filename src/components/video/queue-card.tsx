@@ -1,8 +1,8 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { ListVideo } from 'lucide-react'
-import ProcessingVideoItem from './processing-video-item'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import ProcessingVideoItem from './processing-item'
 import { useLanguage } from '@/lib/i18n/provider'
 import type { VideoFile } from '@/types/video'
 

@@ -1,12 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  turbopack: {
-    resolveAlias: {
-      'MediaInfoModule.wasm': { external: ['MediaInfoModule.wasm'] }
-    }
-  },
-  webpack: (config) => {
+  reactStrictMode: true,
+  webpack: (config, { webpack }) => {
     config.resolve.fallback = { fs: false, path: false, crypto: false }
     config.module.rules.push({
       test: /\.wasm$/,
@@ -19,6 +15,11 @@ const nextConfig: NextConfig = {
       ...config.resolve.alias,
       'MediaInfoModule.wasm': false
     }
+    config.plugins.push(
+      new webpack.IgnorePlugin({
+        resourceRegExp: /MediaInfoModule\.wasm$/
+      })
+    )
     return config
   },
   headers: async () => {
@@ -37,6 +38,16 @@ const nextConfig: NextConfig = {
         ]
       }
     ]
+  },
+  rewrites: async () => {
+    return {
+      fallback: [
+        {
+          source: '/:path*',
+          destination: '/'
+        }
+      ]
+    }
   }
 }
 

@@ -1,26 +1,26 @@
 'use client'
 
 import { memo } from 'react'
+import { Clock, Loader2, CheckCircle2, Download, XCircle, Trash2, Info, Ban } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { Clock, Loader2, CheckCircle2, Download, XCircle, Trash2, Info, Ban } from 'lucide-react'
-import { Separator } from './ui/separator'
+import { Separator } from '@/components/ui/separator'
 import { useLanguage } from '@/lib/i18n/provider'
 import { formatBytes, getStatusMessageText, getErrorMessageText } from '@/lib/formatters'
-import VideoPreview from './video-preview'
-import { useDownloadFile } from '@/hooks/use-download-file'
-import type { VideoFile, VideoStatus } from '@/types/video'
 import { cn, insertFilenameSuffix } from '@/lib/utils'
+import type { VideoFile, VideoStatus } from '@/types/video'
+import { useDownloadFile } from '@/hooks/use-download-file'
+import VideoPreview from './preview'
 
-const statusIcons: Record<VideoStatus, React.ReactNode> = {
+const STATUS_ICONS: Record<VideoStatus, React.ReactNode> = {
   queued: <Clock className="h-5 w-5 text-yellow-500" />,
   processing: <Loader2 className="h-5 w-5 animate-spin text-blue-500" />,
   completed: <CheckCircle2 className="h-5 w-5 text-green-500" />,
   error: <XCircle className="h-5 w-5 text-red-500" />
 }
 
-const ProcessingVideoItem = memo(function ProcessingVideoItem({
+function ProcessingVideoItem({
   video,
   onRemove,
   onCancel,
@@ -36,6 +36,15 @@ const ProcessingVideoItem = memo(function ProcessingVideoItem({
 
   const previewUrl =
     video.status === 'completed' && video.processedUrl ? video.processedUrl : video.originalUrl
+
+  const handleDownload = () => {
+    if (video.processedUrl) {
+      downloadFile(video.processedUrl, insertFilenameSuffix(video.file.name, '-interpolated'))
+    }
+  }
+
+  const isProcessing = video.status === 'processing'
+  const isError = video.status === 'error'
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4 first:pt-0 last:pb-0">
@@ -55,39 +64,41 @@ const ProcessingVideoItem = memo(function ProcessingVideoItem({
           <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
             <span>{formatBytes(video.file.size)}</span>
             <Separator orientation="vertical" className="h-3" />
+
             {video.duration ? (
               <span>{video.duration.toFixed(2)}s</span>
             ) : (
               <Loader2 className="h-3 w-3 animate-spin" />
             )}
+
             <Separator orientation="vertical" className="h-3" />
+
             {video.fps ? (
               <span>{video.fps.toFixed(2)} FPS</span>
             ) : (
               <Loader2 className="h-3 w-3 animate-spin" />
             )}
-            <div
-              className={cn('flex items-center gap-2 md:w-auto w-full', video.status === 'error' && 'w-full')}
-            >
+
+            <div className={cn('flex items-center gap-2 md:w-auto w-full', isError && 'w-full')}>
               <Separator orientation="vertical" className="h-3 hidden md:block" />
-              {statusIcons[video.status]}
+              {STATUS_ICONS[video.status]}
               <span className="text-sm capitalize">{getStatusMessageText(t, video.status)}</span>
             </div>
           </div>
+
           <div className="flex gap-2">
             {video.status === 'completed' && video.processedUrl && (
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={() =>
-                  downloadFile(video.processedUrl!, insertFilenameSuffix(video.file.name, '-interpolated'))
-                }
+                onClick={handleDownload}
                 aria-label={t('queueCard.downloadAriaLabel')}
               >
                 <Download className="h-4 w-4 text-muted-foreground hover:text-primary" />
               </Button>
             )}
-            {video.status === 'processing' ? (
+
+            {isProcessing ? (
               <Button
                 size="icon"
                 variant="ghost"
@@ -108,7 +119,8 @@ const ProcessingVideoItem = memo(function ProcessingVideoItem({
             )}
           </div>
         </div>
-        {video.status === 'error' && video.error && (
+
+        {isError && video.error && (
           <div className="flex items-center gap-2 text-xs text-destructive mt-1">
             <Info className="h-3 w-3 flex-shrink-0" />
             <span className="truncate" title={getErrorMessageText(t, video.error)}>
@@ -116,10 +128,11 @@ const ProcessingVideoItem = memo(function ProcessingVideoItem({
             </span>
           </div>
         )}
+
         <Progress value={video.progress} className="w-full mt-2 h-2" />
       </div>
     </div>
   )
-})
+}
 
-export default ProcessingVideoItem
+export default memo(ProcessingVideoItem)
