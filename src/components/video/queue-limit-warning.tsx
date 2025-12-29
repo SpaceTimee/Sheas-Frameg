@@ -12,8 +12,8 @@ export default function QueueLimitWarning() {
 
   return (
     <div className="px-6 pb-4 pt-0 animate-in fade-in slide-in-from-top-1 duration-300">
-      <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-md border border-border/50">
-        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+      <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-md border border-border/50">
+        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
         <p className="flex-1">{t('queueCard.limitationWarning')}</p>
         <button
           onClick={() => setIsVisible(false)}
