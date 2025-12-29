@@ -1,5 +1,5 @@
 {
-  "footerText": "Space Time ❤️ Ver. 1.0.7",
+  "footerText": "Space Time ❤️ Ver. 1.0.8",
   "jobCard": {
     "title": "处理视频",
     "description": "上传视频，选择插帧倍数，然后将它们添加到队列中。所有处理都在你的浏览器中完成",
@@ -35,7 +35,7 @@
     "downloadAriaLabel": "下载处理后的视频",
     "removeAriaLabel": "从队列中移除",
     "cancelAriaLabel": "取消处理",
-    "limitationWarning": "高分辨率 (>1080p) 或含透明通道的视频可能导致内存错误"
+    "limitationWarning": "WebM 或高分辨率 (>1080p) 视频可能导致处理错误"
   },
   "status": {
     "queued": "排队中",
