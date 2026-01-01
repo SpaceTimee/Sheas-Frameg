@@ -1,12 +1,12 @@
 {
-  "footerText": "Space Time ❤️ Ver. 1.0.8",
+  "footerText": "Space Time ❤️ Ver. 1.0.9",
   "jobCard": {
     "title": "Process Videos",
     "description": "Upload videos, choose an interpolation factor, and add them to the queue. All processing is done in your browser",
     "upload": {
       "click": "Click to upload",
       "drag": "or drag and drop video files",
-      "formats": "MP4, WEBM, MOV, etc."
+      "formats": "MP4, WEBM, MOV, and all major formats"
     },
     "removeFile": "Remove {{fileName}}",
     "invalidFile": "Invalid File",
@@ -35,7 +35,7 @@
     "downloadAriaLabel": "Download processed video",
     "removeAriaLabel": "Remove from queue",
     "cancelAriaLabel": "Cancel processing",
-    "limitationWarning": "WebM or High resolution (>1080p) videos may cause processing errors"
+    "limitationWarning": "Some WebM and High resolution (>1080p) videos may cause processing errors"
   },
   "status": {
     "queued": "queued",

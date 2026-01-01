@@ -1,12 +1,12 @@
 {
-  "footerText": "Space Time ❤️ Ver. 1.0.8",
+  "footerText": "Space Time ❤️ Ver. 1.0.9",
   "jobCard": {
     "title": "处理视频",
     "description": "上传视频，选择插帧倍数，然后将它们添加到队列中。所有处理都在你的浏览器中完成",
     "upload": {
       "click": "点击上传",
       "drag": "或拖放视频文件",
-      "formats": "支持 MP4, WEBM, MOV 等"
+      "formats": "支持 MP4, WEBM, MOV 等所有主流格式"
     },
     "removeFile": "移除 {{fileName}}",
     "invalidFile": "无效文件",
@@ -35,7 +35,7 @@
     "downloadAriaLabel": "下载处理后的视频",
     "removeAriaLabel": "从队列中移除",
     "cancelAriaLabel": "取消处理",
-    "limitationWarning": "WebM 或高分辨率 (>1080p) 视频可能导致处理错误"
+    "limitationWarning": "部分 WebM 和高分辨率 (>1080p) 视频可能导致处理错误"
   },
   "status": {
     "queued": "排队中",
