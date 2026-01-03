@@ -43,3 +43,9 @@ next-env.d.ts
 # firebase
 firebase-debug.log
 firestore-debug.log
+
+# pwa and sitemap
+public/sw.js
+public/workbox-*.js
+public/sitemap*.xml
+public/robots.txt
