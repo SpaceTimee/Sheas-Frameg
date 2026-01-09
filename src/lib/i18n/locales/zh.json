@@ -1,12 +1,12 @@
 {
-  "footerText": "Space Time ❤️ Ver. 1.0.10",
+  "footerText": "Space Time ❤️ Ver. 1.0.11",
   "jobCard": {
     "title": "处理视频",
     "description": "上传视频，选择插帧倍数，然后将它们添加到队列中。所有处理都在你的浏览器中完成",
     "upload": {
       "click": "点击上传",
       "drag": "或拖放视频文件",
-      "formats": "支持 MP4, WEBM, MOV 等所有主流格式"
+      "formats": "支持 MP4、WEBM、MOV 等主流格式"
     },
     "removeFile": "移除 {{fileName}}",
     "invalidFile": "无效文件",
@@ -22,9 +22,9 @@
     },
     "button": {
       "loadingFfmpeg": "正在加载视频引擎...",
-      "addingToQueue": "正在添加到队列...",
-      "addToQueue_singular": "将 {{count}} 个文件添加到队列",
-      "addToQueue_plural": "将 {{count}} 个文件添加到队列"
+      "addToQueue": "添加文件到队列",
+      "addToQueue_singular": "添加 {{count}} 个文件到队列",
+      "addToQueue_plural": "添加 {{count}} 个文件到队列"
     }
   },
   "queueCard": {
@@ -59,13 +59,11 @@
     "errorReadingFile": {
       "title": "读取文件 {{fileName}} 出错",
       "description": "无法从此视频文件读取元数据。该文件已被标记为无效"
-    },
-    "cannotRemove": {
-      "title": "无法移除",
-      "description": "请等待当前视频处理完成"
     }
   },
   "errors": {
+    "metadataReadError": "无法读取视频元数据",
+    "unknownProcessingErrorNoDetails": "处理过程中发生未知错误",
     "unknownProcessingError": "处理过程中发生未知错误: {{message}}",
     "sharedArrayBufferError": "浏览器配置错误 (SharedArrayBuffer)。请确保使用 HTTPS"
   }

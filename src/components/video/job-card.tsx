@@ -23,8 +23,7 @@ interface JobCardProps {
   interpolationFactor: number
   setInterpolationFactor: (factor: number) => void
   onAddToQueue: () => void
-  isAddingToQueue: boolean
-  isFfmpegLoaded: boolean
+  isFFmpegLoaded: boolean
   isArrowGlowing: boolean
 }
 
@@ -39,25 +38,20 @@ export default function JobCard({
   interpolationFactor,
   setInterpolationFactor,
   onAddToQueue,
-  isAddingToQueue,
-  isFfmpegLoaded,
+  isFFmpegLoaded,
   isArrowGlowing
 }: JobCardProps) {
   const { t } = useLanguage()
-  const hasValidFiles = selectedFiles.some((f) => !f.error)
-
-  const getButtonText = () => {
-    if (isAddingToQueue) {
-      return t('jobCard.button.addingToQueue')
-    }
-    if (hasValidFiles && !isFfmpegLoaded) {
-      return t('jobCard.button.loadingFfmpeg')
-    }
-    const validFileCount = selectedFiles.filter((f) => !f.error).length
-    return t(validFileCount > 1 ? 'jobCard.button.addToQueue_plural' : 'jobCard.button.addToQueue_singular', {
-      count: validFileCount
-    })
-  }
+  const validFileCount = selectedFiles.reduce((count, file) => (file.error ? count : count + 1), 0)
+  const hasValidFiles = validFileCount > 0
+  const isEngineLoading = hasValidFiles && !isFFmpegLoaded
+  const buttonLabel = isEngineLoading
+    ? t('jobCard.button.loadingFfmpeg')
+    : validFileCount === 0
+      ? t('jobCard.button.addToQueue')
+      : t(validFileCount > 1 ? 'jobCard.button.addToQueue_plural' : 'jobCard.button.addToQueue_singular', {
+          count: validFileCount
+        })
 
   return (
     <>
@@ -130,12 +124,10 @@ export default function JobCard({
                     <Button
                       onClick={onAddToQueue}
                       className="w-full"
-                      disabled={!hasValidFiles || isAddingToQueue || !isFfmpegLoaded}
+                      disabled={!hasValidFiles || !isFFmpegLoaded}
                     >
-                      {(isAddingToQueue || (hasValidFiles && !isFfmpegLoaded)) && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      )}
-                      {getButtonText()}
+                      {isEngineLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {buttonLabel}
                     </Button>
                   </div>
                 </div>

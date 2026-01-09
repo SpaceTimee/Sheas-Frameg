@@ -17,6 +17,7 @@ export default function QueueLimitWarning() {
         <p className="flex-1">{t('queueCard.limitationWarning')}</p>
         <button
           onClick={() => setIsVisible(false)}
+          type="button"
           className="text-muted-foreground/70 hover:text-foreground transition-colors -mr-1 p-0.5 rounded-sm hover:bg-background/50"
         >
           <X className="w-3.5 h-3.5" />

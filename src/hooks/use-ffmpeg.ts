@@ -22,7 +22,6 @@ export function useFFmpeg() {
     try {
       const { FFmpeg } = await import('@ffmpeg/ffmpeg')
       const ffmpeg = new FFmpeg()
-      ffmpeg.on('log', () => {})
       await ffmpeg.load()
       ffmpegRef.current = ffmpeg
       setIsLoaded(true)

@@ -1,12 +1,12 @@
 {
-  "footerText": "Space Time ❤️ Ver. 1.0.10",
+  "footerText": "Space Time ❤️ Ver. 1.0.11",
   "jobCard": {
     "title": "Process Videos",
-    "description": "Upload videos, choose an interpolation factor, and add them to the queue. All processing is done in your browser",
+    "description": "Upload videos, choose an interpolation factor, and add them to the queue. All processing runs in your browser",
     "upload": {
       "click": "Click to upload",
       "drag": "or drag and drop video files",
-      "formats": "MP4, WEBM, MOV, and all major formats"
+      "formats": "MP4, WEBM, MOV, and most major formats"
     },
     "removeFile": "Remove {{fileName}}",
     "invalidFile": "Invalid File",
@@ -21,10 +21,10 @@
       "8x": "8x Frames"
     },
     "button": {
-      "loadingFfmpeg": "Loading Video Engine...",
-      "addingToQueue": "Adding to Queue...",
-      "addToQueue_singular": "Add {{count}} File to Queue",
-      "addToQueue_plural": "Add {{count}} Files to Queue"
+      "loadingFfmpeg": "Loading video engine...",
+      "addToQueue": "Add files to queue",
+      "addToQueue_singular": "Add {{count}} file to queue",
+      "addToQueue_plural": "Add {{count}} files to queue"
     }
   },
   "queueCard": {
@@ -35,7 +35,7 @@
     "downloadAriaLabel": "Download processed video",
     "removeAriaLabel": "Remove from queue",
     "cancelAriaLabel": "Cancel processing",
-    "limitationWarning": "Some WebM and High resolution (>1080p) videos may cause processing errors"
+    "limitationWarning": "Some WebM and high-resolution (>1080p) videos may cause processing errors"
   },
   "status": {
     "queued": "queued",
@@ -50,7 +50,7 @@
     },
     "invalidFileType": {
       "title": "Invalid File Type",
-      "description": "File \"{{fileName}}\" was skipped as it's not a valid video file"
+      "description": "File \"{{fileName}}\" was skipped because it's not a valid video file"
     },
     "noFilesSelected": {
       "title": "No valid files selected",
@@ -59,13 +59,11 @@
     "errorReadingFile": {
       "title": "Error Reading {{fileName}}",
       "description": "Could not read metadata from this video file. It has been marked as invalid"
-    },
-    "cannotRemove": {
-      "title": "Cannot Remove",
-      "description": "Please wait for the current video to finish processing"
     }
   },
   "errors": {
+    "metadataReadError": "Could not read video metadata",
+    "unknownProcessingErrorNoDetails": "An unknown error occurred",
     "unknownProcessingError": "An unknown error occurred: {{message}}",
     "sharedArrayBufferError": "Browser configuration error (SharedArrayBuffer). Ensure HTTPS is used"
   }

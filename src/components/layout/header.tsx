@@ -17,9 +17,10 @@ export default function Header() {
       setScrolled(window.scrollY > 10)
     }
 
-    document.addEventListener('scroll', handleScroll)
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => {
-      document.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('scroll', handleScroll)
     }
   }, [])
 

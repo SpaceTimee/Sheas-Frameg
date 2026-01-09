@@ -1,5 +1,5 @@
 export type VideoStatus = 'queued' | 'processing' | 'completed' | 'error'
-export type ProcessingErrorType = 'shared-array-buffer' | 'unknown'
+export type ProcessingErrorType = 'metadata' | 'shared' | 'unknown'
 
 export interface ProcessingError {
   type: ProcessingErrorType

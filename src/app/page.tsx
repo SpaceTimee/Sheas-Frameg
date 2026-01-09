@@ -11,7 +11,7 @@ const VideoProcessor = dynamic(() => import('@/components/video/processor'), {
     <div className="flex flex-1 flex-col items-center justify-center">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Loader2 className="h-6 w-6 animate-spin" />
-        <p>Loading Video Processor...</p>
+        <p>Loading video processor...</p>
       </div>
     </div>
   )
@@ -19,7 +19,7 @@ const VideoProcessor = dynamic(() => import('@/components/video/processor'), {
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-background font-sans">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <main className="container mx-auto p-4 md:p-8 flex flex-1 flex-col">
         <VideoProcessor />

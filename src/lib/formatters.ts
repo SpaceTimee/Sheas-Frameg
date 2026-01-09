@@ -17,12 +17,15 @@ export const getStatusMessageText = (t: Translator, status: VideoStatus) => {
 export const getErrorMessageText = (t: Translator, error?: ProcessingError) => {
   if (!error) return ''
   switch (error.type) {
-    case 'shared-array-buffer':
+    case 'metadata':
+      return t('errors.metadataReadError')
+    case 'shared':
       return t('errors.sharedArrayBufferError')
     case 'unknown':
     default:
+      if (!error.message) return t('errors.unknownProcessingErrorNoDetails')
       return t('errors.unknownProcessingError', {
-        message: error.message || ''
+        message: error.message
       })
   }
 }

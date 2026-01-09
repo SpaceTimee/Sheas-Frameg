@@ -12,8 +12,8 @@ export interface VideoInfo {
 
 interface MediaInfoTrack {
   '@type': string
-  Duration?: string
-  FrameRate?: string
+  Duration?: string | number
+  FrameRate?: string | number
 }
 
 interface MediaInfoResult {
@@ -22,22 +22,35 @@ interface MediaInfoResult {
   }
 }
 
+const parseMediaNumber = (value: string | number | undefined, fallback: number) => {
+  if (value === undefined || value === null) return fallback
+  if (typeof value === 'number') return Number.isFinite(value) ? value : fallback
+  const normalized = value.trim().split(' ')[0]
+  if (!normalized) return fallback
+
+  if (normalized.includes('/')) {
+    const [numerator, denominator] = normalized.split('/').map((value) => Number.parseFloat(value))
+    if (Number.isFinite(numerator) && Number.isFinite(denominator) && denominator !== 0)
+      return numerator / denominator
+  }
+
+  const parsed = Number.parseFloat(normalized)
+  return Number.isFinite(parsed) ? parsed : fallback
+}
+
 export const getVideoInfo = async (id: string, file: File | Blob): Promise<VideoInfo> => {
   const mediainfo = await MediaInfoFactory({
     format: 'object',
     locateFile: () => '/MediaInfoModule.wasm'
   })
 
-  if (!mediainfo) {
-    throw new Error('Failed to initialize MediaInfo')
-  }
+  if (!mediainfo) throw new Error('Failed to initialize MediaInfo')
 
   try {
     const result = (await mediainfo.analyzeData(
       () => file.size,
       async (chunkSize, offset) => {
-        const slice = file.slice(offset, offset + chunkSize)
-        return new Uint8Array(await slice.arrayBuffer())
+        return new Uint8Array(await file.slice(offset, offset + chunkSize).arrayBuffer())
       }
     )) as MediaInfoResult
 
@@ -47,8 +60,8 @@ export const getVideoInfo = async (id: string, file: File | Blob): Promise<Video
 
     return {
       id,
-      duration: parseFloat(track.Duration || '0'),
-      fps: parseFloat(track.FrameRate || '30')
+      duration: parseMediaNumber(track.Duration, 0),
+      fps: parseMediaNumber(track.FrameRate, 30)
     }
   } finally {
     mediainfo.close()
@@ -65,38 +78,33 @@ export async function processVideo(
   const { duration, fps, file } = video
   if (!duration || !fps) {
     const error: ProcessingError = {
-      type: 'unknown',
-      message: 'Video metadata not available'
+      type: 'metadata'
     }
     updateVideo(video.id, { status: 'error', error })
     return
   }
+
+  const inputFileName = file.name
+  const outputFileName = insertFilenameSuffix(inputFileName, `-interpolated-${video.id}`)
 
   try {
     updateVideo(video.id, { status: 'processing', progress: 0 })
 
     ffmpeg.on('progress', onProgress)
 
-    const inputFileName = file.name
-    const outputFileName = insertFilenameSuffix(inputFileName, `-interpolated-${video.id}`)
-
     await ffmpeg.writeFile(inputFileName, await fetchFile(file))
-
-    const targetFps = fps * video.factor
 
     const command = [
       '-i',
       inputFileName,
       '-vf',
-      `minterpolate=fps=${targetFps}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1`,
+      `minterpolate=fps=${fps * video.factor}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1`,
       outputFileName
     ]
 
     const result = await ffmpeg.exec(command)
 
-    if (cancellationRef.current) {
-      return
-    }
+    if (cancellationRef.current) return
 
     if (result === 0) {
       const data = await ffmpeg.readFile(outputFileName)
@@ -115,31 +123,30 @@ export async function processVideo(
         duration: processedDuration,
         fps: processedFps
       })
-
-      await ffmpeg.deleteFile(inputFileName)
-      await ffmpeg.deleteFile(outputFileName)
     } else {
       throw new Error(`FFmpeg exited with a non-zero status: ${result}`)
     }
   } catch (err: unknown) {
-    if (cancellationRef.current) {
-      return
-    }
+    if (cancellationRef.current) return
 
     const error = err as Error
     let processingError: ProcessingError
 
-    if (error?.message?.includes('SharedArrayBuffer')) {
-      processingError = { type: 'shared-array-buffer' }
-    } else {
+    if (error?.message?.includes('SharedArrayBuffer')) processingError = { type: 'shared' }
+    else {
       processingError = {
         type: 'unknown',
-        message: error.message || 'Unknown error'
+        message: error.message
       }
     }
 
     updateVideo(video.id, { status: 'error', error: processingError })
   } finally {
     ffmpeg.off('progress', onProgress)
+    try {
+      await Promise.allSettled([ffmpeg.deleteFile(inputFileName), ffmpeg.deleteFile(outputFileName)])
+    } catch {
+      // Ignore cleanup errors
+    }
   }
 }

@@ -38,13 +38,14 @@ function ProcessingVideoItem({
     video.status === 'completed' && video.processedUrl ? video.processedUrl : video.originalUrl
 
   const handleDownload = () => {
-    if (video.processedUrl) {
+    if (video.processedUrl)
       downloadFile(video.processedUrl, insertFilenameSuffix(video.file.name, '-interpolated'))
-    }
   }
 
   const isProcessing = video.status === 'processing'
   const isError = video.status === 'error'
+  const statusText = getStatusMessageText(t, video.status)
+  const errorMessage = isError && video.error ? getErrorMessageText(t, video.error) : ''
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4 first:pt-0 last:pb-0">
@@ -82,7 +83,7 @@ function ProcessingVideoItem({
             <div className={cn('flex items-center gap-2 md:w-auto w-full', isError && 'w-full')}>
               <Separator orientation="vertical" className="h-3 hidden md:block" />
               {STATUS_ICONS[video.status]}
-              <span className="text-sm capitalize">{getStatusMessageText(t, video.status)}</span>
+              <span className="text-sm capitalize">{statusText}</span>
             </div>
           </div>
 
@@ -120,11 +121,11 @@ function ProcessingVideoItem({
           </div>
         </div>
 
-        {isError && video.error && (
+        {errorMessage && (
           <div className="flex items-center gap-2 text-xs text-destructive mt-1">
             <Info className="h-3 w-3 flex-shrink-0" />
-            <span className="truncate" title={getErrorMessageText(t, video.error)}>
-              {getErrorMessageText(t, video.error)}
+            <span className="truncate" title={errorMessage}>
+              {errorMessage}
             </span>
           </div>
         )}

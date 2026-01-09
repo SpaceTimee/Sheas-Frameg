@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useRef, useEffect, useCallback } from 'react'
+import { memo, useRef, useEffect } from 'react'
 import { EyeOff } from 'lucide-react'
 
 function VideoPreview({
@@ -16,30 +16,21 @@ function VideoPreview({
 
   useEffect(() => {
     const videoEl = videoRef.current
-    if (videoEl && videoEl.src !== url) {
-      videoEl.src = url
-    }
+    if (videoEl && videoEl.src !== url) videoEl.src = url
   }, [url])
 
   useEffect(() => {
     const videoEl = videoRef.current
     if (!videoEl) return
 
-    if (isPaused) {
-      videoEl.pause()
-    } else {
-      videoEl.play().catch(() => {})
-    }
+    if (isPaused) videoEl.pause()
+    else videoEl.play().catch(() => {})
   }, [isPaused])
-
-  const handleTogglePlayPause = useCallback(() => {
-    onTogglePlayPause()
-  }, [onTogglePlayPause])
 
   return (
     <div
       className="relative flex-shrink-0 cursor-pointer self-center sm:self-auto"
-      onClick={handleTogglePlayPause}
+      onClick={onTogglePlayPause}
     >
       <video
         ref={videoRef}
@@ -48,9 +39,7 @@ function VideoPreview({
         loop
         muted
         onLoadedData={(e) => {
-          if (!isPaused) {
-            e.currentTarget.play().catch(() => {})
-          }
+          if (!isPaused) e.currentTarget.play().catch(() => {})
         }}
       />
       {isPaused && (
