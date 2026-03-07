@@ -78,7 +78,9 @@ export const reducer = (state: State, action: Action): State => {
     case actionTypes.UPDATE_TOAST:
       return {
         ...state,
-        toasts: state.toasts.map((t) => (t.id === action.toast.id ? { ...t, ...action.toast } : t))
+        toasts: state.toasts.map((toastItem) =>
+          toastItem.id === action.toast.id ? { ...toastItem, ...action.toast } : toastItem
+        )
       }
 
     case actionTypes.DISMISS_TOAST: {
@@ -112,7 +114,7 @@ export const reducer = (state: State, action: Action): State => {
       }
       return {
         ...state,
-        toasts: state.toasts.filter((t) => t.id !== action.toastId)
+        toasts: state.toasts.filter((toastItem) => toastItem.id !== action.toastId)
       }
     default:
       return state

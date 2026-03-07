@@ -34,8 +34,7 @@ function ProcessingVideoItem({
   const { t } = useLanguage()
   const downloadFile = useDownloadFile()
 
-  const previewUrl =
-    video.status === 'completed' && video.processedUrl ? video.processedUrl : video.originalUrl
+  const previewUrl = video.processedUrl || video.originalUrl
 
   const handleDownload = () => {
     if (video.processedUrl)
@@ -45,7 +44,7 @@ function ProcessingVideoItem({
   const isProcessing = video.status === 'processing'
   const isError = video.status === 'error'
   const statusText = getStatusMessageText(t, video.status)
-  const errorMessage = isError && video.error ? getErrorMessageText(t, video.error) : ''
+  const errorMessage = video.error ? getErrorMessageText(t, video.error) : ''
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4 first:pt-0 last:pb-0">

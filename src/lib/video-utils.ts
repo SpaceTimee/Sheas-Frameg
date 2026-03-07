@@ -29,7 +29,7 @@ const parseMediaNumber = (value: string | number | undefined, fallback: number) 
   if (!normalized) return fallback
 
   if (normalized.includes('/')) {
-    const [numerator, denominator] = normalized.split('/').map((value) => Number.parseFloat(value))
+    const [numerator, denominator] = normalized.split('/').map(Number)
     if (Number.isFinite(numerator) && Number.isFinite(denominator) && denominator !== 0)
       return numerator / denominator
   }
@@ -47,14 +47,14 @@ export const getVideoInfo = async (id: string, file: File | Blob): Promise<Video
   if (!mediainfo) throw new Error('Failed to initialize MediaInfo')
 
   try {
-    const result = (await mediainfo.analyzeData(
+    const mediaInfoResult = (await mediainfo.analyzeData(
       () => file.size,
       async (chunkSize, offset) => {
         return new Uint8Array(await file.slice(offset, offset + chunkSize).arrayBuffer())
       }
     )) as MediaInfoResult
 
-    const track = result?.media?.track?.find((t) => t['@type'] === 'Video')
+    const track = mediaInfoResult?.media?.track?.find((trackItem) => trackItem['@type'] === 'Video')
 
     if (!track) throw new Error('No video track found')
 
@@ -76,6 +76,7 @@ export async function processVideo(
   onProgress: (progress: { time: number }) => void
 ): Promise<void> {
   const { duration, fps, file } = video
+
   if (!duration || !fps) {
     const error: ProcessingError = {
       type: 'metadata'
@@ -102,13 +103,13 @@ export async function processVideo(
       outputFileName
     ]
 
-    const result = await ffmpeg.exec(command)
+    const exitCode = await ffmpeg.exec(command)
 
     if (cancellationRef.current) return
 
-    if (result === 0) {
-      const data = await ffmpeg.readFile(outputFileName)
-      const blob = new Blob([data as unknown as BlobPart], { type: 'video/mp4' })
+    if (exitCode === 0) {
+      const outputData = await ffmpeg.readFile(outputFileName)
+      const blob = new Blob([outputData as unknown as BlobPart], { type: 'video/mp4' })
 
       const processedUrl = URL.createObjectURL(blob)
       const { duration: processedDuration, fps: processedFps } = await getVideoInfo(
@@ -124,21 +125,15 @@ export async function processVideo(
         fps: processedFps
       })
     } else {
-      throw new Error(`FFmpeg exited with a non-zero status: ${result}`)
+      throw new Error(`FFmpeg exited with a non-zero status: ${exitCode}`)
     }
-  } catch (err: unknown) {
+  } catch (caughtError: unknown) {
     if (cancellationRef.current) return
 
-    const error = err as Error
-    let processingError: ProcessingError
-
-    if (error?.message?.includes('SharedArrayBuffer')) processingError = { type: 'shared' }
-    else {
-      processingError = {
-        type: 'unknown',
-        message: error.message
-      }
-    }
+    const error = caughtError as Error
+    const processingError: ProcessingError = error?.message?.includes('SharedArrayBuffer')
+      ? { type: 'shared' }
+      : { type: 'unknown', message: error.message }
 
     updateVideo(video.id, { status: 'error', error: processingError })
   } finally {

@@ -42,7 +42,7 @@ export default function JobCard({
   isArrowGlowing
 }: JobCardProps) {
   const { t } = useLanguage()
-  const validFileCount = selectedFiles.reduce((count, file) => (file.error ? count : count + 1), 0)
+  const validFileCount = selectedFiles.filter((file) => !file.error).length
   const hasValidFiles = validFileCount > 0
   const isEngineLoading = hasValidFiles && !isFFmpegLoaded
   const buttonLabel = isEngineLoading
@@ -85,10 +85,10 @@ export default function JobCard({
                 {selectedFiles.length > 0 && (
                   <div className="space-y-4">
                     <div className="divide-y divide-border">
-                      {selectedFiles.map((item) => (
-                        <div key={item.id} className="py-4 first:pt-0 last:pb-0">
+                      {selectedFiles.map((selectedFile) => (
+                        <div key={selectedFile.id} className="py-4 first:pt-0 last:pb-0">
                           <SelectedFileItem
-                            item={item}
+                            selectedFile={selectedFile}
                             onRemove={onRemoveSelectedFile}
                             onTogglePlayPause={onToggleSelectedFilePlayPause}
                           />
@@ -105,7 +105,7 @@ export default function JobCard({
                     </label>
                     <Select
                       value={String(interpolationFactor)}
-                      onValueChange={(v) => setInterpolationFactor(Number(v))}
+                      onValueChange={(value) => setInterpolationFactor(Number(value))}
                     >
                       <SelectTrigger id="interpolation-factor">
                         <SelectValue placeholder={t('jobCard.factor.placeholder')} />

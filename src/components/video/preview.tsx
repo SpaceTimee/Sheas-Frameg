@@ -38,8 +38,8 @@ function VideoPreview({
         playsInline
         loop
         muted
-        onLoadedData={(e) => {
-          if (!isPaused) e.currentTarget.play().catch(() => {})
+        onLoadedData={(event) => {
+          if (!isPaused) event.currentTarget.play().catch(() => {})
         }}
       />
       {isPaused && (

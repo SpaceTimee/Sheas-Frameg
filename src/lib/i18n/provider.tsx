@@ -28,6 +28,18 @@ const FALLBACK_LANGUAGE: Language = 'en'
 
 export type Translator = (key: string, replacements?: Record<string, string | number>) => string
 
+const getNestedTranslation = (trans: Translations, path: string): string | undefined => {
+  const keys = path.split('.')
+  let current: string | Translations | undefined = trans
+
+  for (const key of keys) {
+    if (current && typeof current === 'object' && key in current) current = current[key]
+    else return undefined
+  }
+
+  return typeof current === 'string' ? current : undefined
+}
+
 const LanguageContext = createContext<
   | {
       language: Language
@@ -42,18 +54,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const t = useCallback<Translator>(
     (key, replacements) => {
-      const getNestedTranslation = (trans: Translations, path: string): string | undefined => {
-        const keys = path.split('.')
-        let current: string | Translations | undefined = trans
-
-        for (const key of keys) {
-          if (current && typeof current === 'object' && key in current) current = current[key]
-          else return undefined
-        }
-
-        return typeof current === 'string' ? current : undefined
-      }
-
       const translation =
         getNestedTranslation(translations[language], key) ??
         getNestedTranslation(translations[FALLBACK_LANGUAGE], key)
@@ -61,8 +61,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       if (!translation) return key
       if (!replacements) return translation
 
-      return Object.entries(replacements).reduce((result, [key, value]) => {
-        return result.split(`{{${key}}}`).join(String(value))
+      return Object.entries(replacements).reduce((translatedString, [key, value]) => {
+        return translatedString.split(`{{${key}}}`).join(String(value))
       }, translation)
     },
     [language]

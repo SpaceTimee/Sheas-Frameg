@@ -10,11 +10,11 @@ import type { SelectedFile } from '@/types/video'
 import VideoPreview from './preview'
 
 function SelectedFileItem({
-  item,
+  selectedFile,
   onRemove,
   onTogglePlayPause
 }: {
-  item: SelectedFile
+  selectedFile: SelectedFile
   onRemove: (id: string) => void
   onTogglePlayPause: (id: string) => void
 }) {
@@ -23,16 +23,16 @@ function SelectedFileItem({
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
       <VideoPreview
-        url={item.previewUrl}
-        isPaused={item.isPaused}
-        onTogglePlayPause={() => onTogglePlayPause(item.id)}
+        url={selectedFile.previewUrl}
+        isPaused={selectedFile.isPaused}
+        onTogglePlayPause={() => onTogglePlayPause(selectedFile.id)}
       />
       <div className="flex-1 w-full min-w-0">
-        <p className="font-medium truncate pr-4">{item.file.name}</p>
+        <p className="font-medium truncate pr-4">{selectedFile.file.name}</p>
         <div className="flex items-center justify-between gap-4 mt-2">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>{formatBytes(item.file.size)}</span>
-            {item.error ? (
+            <span>{formatBytes(selectedFile.file.size)}</span>
+            {selectedFile.error ? (
               <>
                 <Separator orientation="vertical" className="h-3" />
                 <div className="flex items-center gap-2 text-destructive">
@@ -43,23 +43,28 @@ function SelectedFileItem({
             ) : (
               <>
                 <Separator orientation="vertical" className="h-3" />
-                {item.duration ? (
-                  <span>{item.duration.toFixed(2)}s</span>
+                {selectedFile.duration ? (
+                  <span>{selectedFile.duration.toFixed(2)}s</span>
                 ) : (
                   <Loader2 className="h-3 w-3 animate-spin" />
                 )}
                 <Separator orientation="vertical" className="h-3" />
-                {item.fps ? (
-                  <span>{item.fps.toFixed(2)} FPS</span>
+                {selectedFile.fps ? (
+                  <span>{selectedFile.fps.toFixed(2)} FPS</span>
                 ) : (
                   <Loader2 className="h-3 w-3 animate-spin" />
                 )}
               </>
             )}
           </div>
-          <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => onRemove(item.id)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="flex-shrink-0"
+            onClick={() => onRemove(selectedFile.id)}
+          >
             <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-            <span className="sr-only">{t('jobCard.removeFile', { fileName: item.file.name })}</span>
+            <span className="sr-only">{t('jobCard.removeFile', { fileName: selectedFile.file.name })}</span>
           </Button>
         </div>
       </div>

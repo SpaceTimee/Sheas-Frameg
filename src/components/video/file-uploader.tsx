@@ -16,11 +16,11 @@ export default function FileUploader({ fileInputRef, onFileChange }: FileUploade
     <div
       className="flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-lg cursor-pointer border-border hover:border-primary/50 bg-background hover:bg-accent/10 transition-colors"
       onClick={() => fileInputRef.current?.click()}
-      onDrop={(e) => {
-        e.preventDefault()
-        onFileChange(e.dataTransfer.files)
+      onDrop={(event) => {
+        event.preventDefault()
+        onFileChange(event.dataTransfer.files)
       }}
-      onDragOver={(e) => e.preventDefault()}
+      onDragOver={(event) => event.preventDefault()}
     >
       <FileVideo className="w-12 h-12 text-muted-foreground" />
       <p className="mt-4 text-sm text-center text-muted-foreground">
@@ -38,7 +38,7 @@ export default function FileUploader({ fileInputRef, onFileChange }: FileUploade
         type="file"
         className="hidden"
         accept="video/*"
-        onChange={(e) => onFileChange(e.target.files)}
+        onChange={(event) => onFileChange(event.target.files)}
         multiple
       />
     </div>
