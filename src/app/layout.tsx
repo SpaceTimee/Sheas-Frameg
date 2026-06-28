@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import type { ReactNode } from 'react'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import { LanguageProvider } from '@/lib/i18n/provider'
 
-const inter = Inter({ subsets: ['latin'] })
+const interFont = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Sheas Frameg',
@@ -24,11 +25,11 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`antialiased ${inter.className}`}>
+    <html lang="en">
+      <body className={`antialiased ${interFont.className}`}>
         <LanguageProvider>
           {children}
           <Toaster />

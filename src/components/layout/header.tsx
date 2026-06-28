@@ -3,53 +3,54 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Github } from 'lucide-react'
-import { Button } from '../ui/button'
-import LanguageSwitcher from '../language-switcher'
-import { cn } from '@/lib/utils'
+import { GitFork } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import LanguageSwitcher from '@/components/language-switcher'
+import { useLanguage } from '@/lib/i18n/provider'
+import { mergeClassNames } from '@/lib/utils'
 import appIcon from '@/app/icon.png'
 
 export default function Header() {
-  const [scrolled, setScrolled] = useState(false)
+  const { translate } = useLanguage()
+  const [hasScrolled, setHasScrolled] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10)
-    }
+    const updateScrollState = () => setHasScrolled((hasScrolled) => window.scrollY > (hasScrolled ? 4 : 12))
 
-    handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
+    updateScrollState()
+    window.addEventListener('scroll', updateScrollState, { passive: true })
+    return () => window.removeEventListener('scroll', updateScrollState)
   }, [])
 
   return (
     <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
       <div
-        className={cn(
+        className={mergeClassNames(
           'container mx-auto flex items-center justify-between px-8 transition-all duration-300',
-          scrolled ? 'h-14' : 'h-16'
+          hasScrolled ? 'h-14' : 'h-16'
         )}
       >
-        <Link href="/" className="flex items-center gap-2" aria-label="Sheas FrameG Home">
-          <Image src={appIcon} alt="Sheas FrameG Logo" width={28} height={28} className="h-7 w-7" />
-          <h1 className="text-xl font-headline whitespace-nowrap">Sheas FrameG</h1>
+        <Link
+          href="/"
+          className="flex items-center gap-2 rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          aria-label={translate('header.homeAriaLabel')}
+        >
+          <Image src={appIcon} alt="" width={28} height={28} className="h-7 w-7" priority />
+          <h1 className="font-headline text-xl whitespace-nowrap">Sheas FrameG</h1>
         </Link>
-        <div className="flex items-center gap-2">
-          <Link
-            href="https://github.com/SpaceTimee/Sheas-Frameg"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub repository"
-          >
-            <Button variant="ghost" size="icon">
-              <Github className="h-4 w-4" />
-              <span className="sr-only">GitHub Repository</span>
-            </Button>
-          </Link>
+        <nav className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" asChild>
+            <Link
+              href="https://github.com/SpaceTimee/Sheas-Frameg"
+              target="_blank"
+              rel="noopener"
+              aria-label={translate('header.githubAriaLabel')}
+            >
+              <GitFork className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </Button>
           <LanguageSwitcher />
-        </div>
+        </nav>
       </div>
     </header>
   )

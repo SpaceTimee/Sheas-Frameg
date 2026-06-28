@@ -1,0 +1,51 @@
+'use client'
+
+import { useVideoProcessor } from '@/hooks/use-video-processor'
+import JobCard from './job-card'
+import QueueCard from './queue-card'
+
+export default function VideoProcessor() {
+  const {
+    videoJobs,
+    selectedVideoFiles,
+    interpolationFactor,
+    setInterpolationFactor,
+    videoFileInputRef,
+    isFFmpegLoaded,
+    isQueueArrowGlowing,
+    isJobCardOpen,
+    setIsJobCardOpen,
+    handleVideoFilesChange,
+    handleAddToQueue,
+    handleRemoveSelectedVideoFile,
+    handleRemoveVideoJob,
+    handleCancelProcessing,
+    handleToggleSelectedVideoFilePlayPause,
+    handleToggleVideoJobPlayPause
+  } = useVideoProcessor()
+
+  return (
+    <div className="space-y-4">
+      <JobCard
+        isJobCardOpen={isJobCardOpen}
+        isFFmpegLoaded={isFFmpegLoaded}
+        isQueueArrowGlowing={isQueueArrowGlowing}
+        videoFileInputRef={videoFileInputRef}
+        selectedVideoFiles={selectedVideoFiles}
+        interpolationFactor={interpolationFactor}
+        setIsJobCardOpen={setIsJobCardOpen}
+        setInterpolationFactor={setInterpolationFactor}
+        onVideoFilesChange={handleVideoFilesChange}
+        onRemoveSelectedVideoFile={handleRemoveSelectedVideoFile}
+        onToggleSelectedVideoFilePlayPause={handleToggleSelectedVideoFilePlayPause}
+        onAddToQueue={handleAddToQueue}
+      />
+      <QueueCard
+        videoJobs={videoJobs}
+        onRemove={handleRemoveVideoJob}
+        onCancel={handleCancelProcessing}
+        onTogglePlayPause={handleToggleVideoJobPlayPause}
+      />
+    </div>
+  )
+}

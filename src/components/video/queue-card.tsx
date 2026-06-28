@@ -1,38 +1,41 @@
 'use client'
 
 import { ListVideo } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import ProcessingVideoItem from './processing-item'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { useLanguage } from '@/lib/i18n/provider'
-import type { VideoFile } from '@/types/video'
+import type { VideoJob } from '@/types/video'
+import VideoJobItem from './queue-item'
 
-interface QueueCardProps extends Omit<React.ComponentProps<typeof ProcessingVideoItem>, 'video'> {
-  videos: VideoFile[]
+interface QueueCardProps {
+  videoJobs: VideoJob[]
+  onRemove: (videoJobId: string) => void
+  onCancel: (videoJobId: string) => void
+  onTogglePlayPause: (videoJobId: string) => void
 }
 
-export default function QueueCard({ videos, ...rest }: QueueCardProps) {
-  const { t } = useLanguage()
+export default function QueueCard({ videoJobs, ...queueItemHandlers }: QueueCardProps) {
+  const { translate } = useLanguage()
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="font-headline text-xl flex items-center gap-2">
-          <ListVideo />
-          {t('queueCard.title')}
+          <ListVideo aria-hidden="true" />
+          {translate('queueCard.title')}
         </CardTitle>
-        <CardDescription className="pt-2">{t('queueCard.description')}</CardDescription>
       </CardHeader>
-      <CardContent>
-        {videos.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground text-sm">
-            <p>{t('queueCard.empty')}</p>
-          </div>
+      <CardDescription className="px-6 pb-4">{translate('queueCard.description')}</CardDescription>
+      <CardContent className="pt-2">
+        {videoJobs.length === 0 ? (
+          <p className="text-center py-12 text-muted-foreground text-sm">{translate('queueCard.empty')}</p>
         ) : (
-          <div className="divide-y divide-border">
-            {videos.map((video) => (
-              <ProcessingVideoItem key={video.id} video={video} {...rest} />
+          <ul className="divide-y divide-border">
+            {videoJobs.map((videoJob) => (
+              <li key={videoJob.id} className="py-4 first:pt-0 last:pb-0">
+                <VideoJobItem videoJob={videoJob} {...queueItemHandlers} />
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </CardContent>
     </Card>

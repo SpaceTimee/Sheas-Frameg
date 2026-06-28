@@ -4,7 +4,7 @@
 
 ## 自我介绍
 
-**Sheas Frameg**: 一只基于 **Next + Tailwind (SPA)** 的视频在线光流插帧工具
+**Sheas Frameg**: 一只基于 **Next + Tailwind (SPA)** 的在线视频光流插帧工具
 
 ## 部署地址
 

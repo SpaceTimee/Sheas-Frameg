@@ -1,57 +1,66 @@
 'use client'
 
+import { useState, type RefObject } from 'react'
 import { FileVideo, ChevronUp, Loader2, ArrowDownCircle } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { useLanguage } from '@/lib/i18n/provider'
-import { cn } from '@/lib/utils'
-import type { SelectedFile } from '@/types/video'
-import SelectedFileItem from './selected-item'
+import { mergeClassNames } from '@/lib/utils'
+import type { SelectedVideoFile } from '@/types/video'
+import SelectedVideoFileItem from './file-item'
 import FileUploader from './file-uploader'
-import QueueLimitWarning from './queue-limit-warning'
+import ProcessingWarning from './processing-warning'
 
 interface JobCardProps {
   isJobCardOpen: boolean
-  setIsJobCardOpen: (isOpen: boolean) => void
-  fileInputRef: React.RefObject<HTMLInputElement | null>
-  onFileChange: (files: FileList | null) => void
-  selectedFiles: SelectedFile[]
-  onRemoveSelectedFile: (id: string) => void
-  onToggleSelectedFilePlayPause: (id: string) => void
-  interpolationFactor: number
-  setInterpolationFactor: (factor: number) => void
-  onAddToQueue: () => void
   isFFmpegLoaded: boolean
-  isArrowGlowing: boolean
+  isQueueArrowGlowing: boolean
+  videoFileInputRef: RefObject<HTMLInputElement | null>
+  selectedVideoFiles: SelectedVideoFile[]
+  interpolationFactor: number
+  setIsJobCardOpen: (isOpen: boolean) => void
+  setInterpolationFactor: (interpolationFactor: number) => void
+  onVideoFilesChange: (fileList: FileList | null) => void
+  onRemoveSelectedVideoFile: (selectedVideoFileId: string) => void
+  onToggleSelectedVideoFilePlayPause: (selectedVideoFileId: string) => void
+  onAddToQueue: () => void
 }
 
 export default function JobCard({
   isJobCardOpen,
-  setIsJobCardOpen,
-  fileInputRef,
-  onFileChange,
-  selectedFiles,
-  onRemoveSelectedFile,
-  onToggleSelectedFilePlayPause,
-  interpolationFactor,
-  setInterpolationFactor,
-  onAddToQueue,
   isFFmpegLoaded,
-  isArrowGlowing
+  isQueueArrowGlowing,
+  videoFileInputRef,
+  selectedVideoFiles,
+  interpolationFactor,
+  setIsJobCardOpen,
+  setInterpolationFactor,
+  onVideoFilesChange,
+  onRemoveSelectedVideoFile,
+  onToggleSelectedVideoFilePlayPause,
+  onAddToQueue
 }: JobCardProps) {
-  const { t } = useLanguage()
-  const validFileCount = selectedFiles.filter((file) => !file.error).length
-  const hasValidFiles = validFileCount > 0
-  const isEngineLoading = hasValidFiles && !isFFmpegLoaded
-  const buttonLabel = isEngineLoading
-    ? t('jobCard.button.loadingFfmpeg')
-    : validFileCount === 0
-      ? t('jobCard.button.addToQueue')
-      : t(validFileCount > 1 ? 'jobCard.button.addToQueue_plural' : 'jobCard.button.addToQueue_singular', {
-          count: validFileCount
-        })
+  const { translate } = useLanguage()
+  const [isProcessingWarningVisible, setIsProcessingWarningVisible] = useState(true)
+  const validSelectedVideoFileCount = selectedVideoFiles.filter(
+    (selectedVideoFile) => !selectedVideoFile.error
+  ).length
+  const hasValidSelectedVideoFiles = validSelectedVideoFileCount > 0
+  const isFFmpegLoading = hasValidSelectedVideoFiles && !isFFmpegLoaded
+  const addToQueueButtonLabel = isFFmpegLoading
+    ? translate('jobCard.button.loadingFfmpeg')
+    : !hasValidSelectedVideoFiles
+      ? translate('jobCard.button.addToQueue')
+      : translate(
+          validSelectedVideoFileCount > 1
+            ? 'jobCard.button.addToQueue_plural'
+            : 'jobCard.button.addToQueue_singular',
+          {
+            count: validSelectedVideoFileCount
+          }
+        )
 
   return (
     <>
@@ -60,86 +69,97 @@ export default function JobCard({
           <div className="flex justify-between items-center pr-6">
             <CardHeader>
               <CardTitle className="font-headline text-xl flex items-center gap-2">
-                <FileVideo />
-                {t('jobCard.title')}
+                <FileVideo aria-hidden="true" />
+                {translate('jobCard.title')}
               </CardTitle>
             </CardHeader>
             <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="icon" className="flex-shrink-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0"
+                aria-label={translate('jobCard.toggleAriaLabel')}
+              >
                 <ChevronUp
-                  className={cn('transition-transform text-muted-foreground', !isJobCardOpen && 'rotate-180')}
+                  className={mergeClassNames(
+                    'transition-transform text-muted-foreground',
+                    !isJobCardOpen && 'rotate-180'
+                  )}
+                  aria-hidden="true"
                 />
-                <span className="sr-only">Toggle Job Card</span>
               </Button>
             </CollapsibleTrigger>
           </div>
-          <CollapsibleContent>
-            <div className="overflow-hidden transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-              <CardDescription className="px-6 pb-4">{t('jobCard.description')}</CardDescription>
+          <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+            <CardDescription className="px-6 pb-4">{translate('jobCard.description')}</CardDescription>
 
-              <QueueLimitWarning />
+            <ProcessingWarning
+              isVisible={isProcessingWarningVisible}
+              onDismiss={() => setIsProcessingWarningVisible(false)}
+            />
 
-              <CardContent className="space-y-6 pt-2">
-                <FileUploader fileInputRef={fileInputRef} onFileChange={onFileChange} />
+            <CardContent className="space-y-6 pt-2">
+              <FileUploader videoFileInputRef={videoFileInputRef} onVideoFilesChange={onVideoFilesChange} />
 
-                {selectedFiles.length > 0 && (
-                  <div className="space-y-4">
-                    <div className="divide-y divide-border">
-                      {selectedFiles.map((selectedFile) => (
-                        <div key={selectedFile.id} className="py-4 first:pt-0 last:pb-0">
-                          <SelectedFileItem
-                            selectedFile={selectedFile}
-                            onRemove={onRemoveSelectedFile}
-                            onTogglePlayPause={onToggleSelectedFilePlayPause}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              {selectedVideoFiles.length > 0 && (
+                <ul className="divide-y divide-border">
+                  {selectedVideoFiles.map((selectedVideoFile) => (
+                    <li key={selectedVideoFile.id} className="py-4 first:pt-0 last:pb-0">
+                      <SelectedVideoFileItem
+                        selectedVideoFile={selectedVideoFile}
+                        onRemove={onRemoveSelectedVideoFile}
+                        onTogglePlayPause={onToggleSelectedVideoFilePlayPause}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                  <div className="space-y-2">
-                    <label htmlFor="interpolation-factor" className="text-sm font-medium">
-                      {t('jobCard.factor.label')}
-                    </label>
-                    <Select
-                      value={String(interpolationFactor)}
-                      onValueChange={(value) => setInterpolationFactor(Number(value))}
-                    >
-                      <SelectTrigger id="interpolation-factor">
-                        <SelectValue placeholder={t('jobCard.factor.placeholder')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="2">{t('jobCard.factor.2x')}</SelectItem>
-                        <SelectItem value="3">{t('jobCard.factor.3x')}</SelectItem>
-                        <SelectItem value="4">{t('jobCard.factor.4x')}</SelectItem>
-                        <SelectItem value="5">{t('jobCard.factor.5x')}</SelectItem>
-                        <SelectItem value="6">{t('jobCard.factor.6x')}</SelectItem>
-                        <SelectItem value="8">{t('jobCard.factor.8x')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <Button
-                      onClick={onAddToQueue}
-                      className="w-full"
-                      disabled={!hasValidFiles || !isFFmpegLoaded}
-                    >
-                      {isEngineLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      {buttonLabel}
-                    </Button>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                <div className="grid gap-1">
+                  <label htmlFor="interpolation-factor" className="text-sm font-medium">
+                    {translate('jobCard.factor.label')}
+                  </label>
+                  <Select
+                    value={String(interpolationFactor)}
+                    onValueChange={(factorValue) => setInterpolationFactor(Number(factorValue))}
+                  >
+                    <SelectTrigger id="interpolation-factor">
+                      <SelectValue placeholder={translate('jobCard.factor.placeholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2">{translate('jobCard.factor.2x')}</SelectItem>
+                      <SelectItem value="3">{translate('jobCard.factor.3x')}</SelectItem>
+                      <SelectItem value="4">{translate('jobCard.factor.4x')}</SelectItem>
+                      <SelectItem value="5">{translate('jobCard.factor.5x')}</SelectItem>
+                      <SelectItem value="6">{translate('jobCard.factor.6x')}</SelectItem>
+                      <SelectItem value="8">{translate('jobCard.factor.8x')}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </CardContent>
-            </div>
+                <div className="sm:col-span-2">
+                  <Button
+                    disabled={!hasValidSelectedVideoFiles || !isFFmpegLoaded}
+                    className="w-full"
+                    onClick={onAddToQueue}
+                  >
+                    {isFFmpegLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                    {addToQueueButtonLabel}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
           </CollapsibleContent>
         </Card>
       </Collapsible>
       <div className="flex justify-center my-4">
-        <div className={cn(!isJobCardOpen && 'hidden')}>
+        <div className={isJobCardOpen ? undefined : 'hidden'}>
           <ArrowDownCircle
-            className={cn('h-8 w-8 text-muted-foreground/50', isArrowGlowing && 'animate-neon-glow')}
+            className={mergeClassNames(
+              'h-8 w-8 text-muted-foreground/50',
+              isQueueArrowGlowing && 'animate-neon-glow'
+            )}
+            aria-hidden="true"
           />
         </div>
       </div>

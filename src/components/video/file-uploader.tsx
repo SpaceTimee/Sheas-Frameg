@@ -1,46 +1,46 @@
 'use client'
 
+import type { RefObject } from 'react'
 import { FileVideo } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { useLanguage } from '@/lib/i18n/provider'
 
 interface FileUploaderProps {
-  fileInputRef: React.RefObject<HTMLInputElement | null>
-  onFileChange: (files: FileList | null) => void
+  videoFileInputRef: RefObject<HTMLInputElement | null>
+  onVideoFilesChange: (fileList: FileList | null) => void
 }
 
-export default function FileUploader({ fileInputRef, onFileChange }: FileUploaderProps) {
-  const { t } = useLanguage()
+export default function FileUploader({ videoFileInputRef, onVideoFilesChange }: FileUploaderProps) {
+  const { translate } = useLanguage()
 
   return (
-    <div
-      className="flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-lg cursor-pointer border-border hover:border-primary/50 bg-background hover:bg-accent/10 transition-colors"
-      onClick={() => fileInputRef.current?.click()}
-      onDrop={(event) => {
-        event.preventDefault()
-        onFileChange(event.dataTransfer.files)
+    <label
+      htmlFor="video-file-input"
+      className="flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-lg cursor-pointer border-border hover:border-primary/50 [&:where(:has(:focus-visible))]:border-primary/50 [&:where(:has(:focus-visible))]:outline-none [&:where(:has(:focus-visible))]:ring-2 [&:where(:has(:focus-visible))]:ring-ring [&:where(:has(:focus-visible))]:ring-offset-2 bg-background hover:bg-accent/10 transition-colors"
+      onDragOver={(dragEvent) => dragEvent.preventDefault()}
+      onDrop={(dropEvent) => {
+        dropEvent.preventDefault()
+        onVideoFilesChange(dropEvent.dataTransfer.files)
       }}
-      onDragOver={(event) => event.preventDefault()}
     >
-      <FileVideo className="w-12 h-12 text-muted-foreground" />
+      <FileVideo className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
       <p className="mt-4 text-sm text-center text-muted-foreground">
-        <Button
-          variant="link"
-          className="font-semibold text-primary p-0 h-auto inline-block pointer-events-none"
-        >
-          {t('jobCard.upload.click')}
-        </Button>{' '}
-        {t('jobCard.upload.drag')}
+        <span className="font-semibold text-primary">{translate('jobCard.upload.click')}</span>{' '}
+        {translate('jobCard.upload.drag')}
       </p>
-      <p className="text-xs text-muted-foreground">{t('jobCard.upload.formats')}</p>
+      <p id="video-file-formats" className="text-xs text-muted-foreground">
+        {translate('jobCard.upload.formats')}
+      </p>
       <input
-        ref={fileInputRef}
+        ref={videoFileInputRef}
+        id="video-file-input"
         type="file"
-        className="hidden"
         accept="video/*"
-        onChange={(event) => onFileChange(event.target.files)}
         multiple
+        className="sr-only"
+        aria-label={translate('jobCard.upload.inputAriaLabel')}
+        aria-describedby="video-file-formats"
+        onChange={(changeEvent) => onVideoFilesChange(changeEvent.target.files)}
       />
-    </div>
+    </label>
   )
 }

@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type Dispatch,
@@ -13,68 +14,76 @@ import {
 import en from './locales/en.json'
 import zh from './locales/zh.json'
 
-type Language = 'en' | 'zh'
+export type Language = 'en' | 'zh'
 
 interface Translations {
-  [key: string]: string | Translations
+  [translationKey: string]: string | Translations
 }
 
-const translations: Record<Language, Translations> = {
-  en: en as Translations,
-  zh: zh as Translations
-}
+const translationDictionaries = { en, zh } satisfies Record<Language, Translations>
 
 const FALLBACK_LANGUAGE: Language = 'en'
 
-export type Translator = (key: string, replacements?: Record<string, string | number>) => string
+export type Translator = (translationKey: string, replacements?: Record<string, string | number>) => string
 
-const getNestedTranslation = (trans: Translations, path: string): string | undefined => {
-  const keys = path.split('.')
-  let current: string | Translations | undefined = trans
-
-  for (const key of keys) {
-    if (current && typeof current === 'object' && key in current) current = current[key]
-    else return undefined
-  }
-
-  return typeof current === 'string' ? current : undefined
+interface LanguageContextValue {
+  language: Language
+  setLanguage: Dispatch<SetStateAction<Language>>
+  translate: Translator
 }
 
-const LanguageContext = createContext<
-  | {
-      language: Language
-      setLanguage: Dispatch<SetStateAction<Language>>
-      t: Translator
-    }
-  | undefined
->(undefined)
+interface LanguageProviderProps {
+  children: ReactNode
+}
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>(FALLBACK_LANGUAGE)
+const getNestedTranslation = (
+  sourceTranslations: Translations,
+  translationPath: string
+): string | undefined => {
+  let currentValue: string | Translations | undefined = sourceTranslations
 
-  const t = useCallback<Translator>(
-    (key, replacements) => {
-      const translation =
-        getNestedTranslation(translations[language], key) ??
-        getNestedTranslation(translations[FALLBACK_LANGUAGE], key)
+  for (const pathSegment of translationPath.split('.')) {
+    if (typeof currentValue !== 'object' || !(pathSegment in currentValue)) return undefined
+    currentValue = currentValue[pathSegment]
+  }
 
-      if (!translation) return key
-      if (!replacements) return translation
+  return typeof currentValue === 'string' ? currentValue : undefined
+}
 
-      return Object.entries(replacements).reduce((translatedString, [key, value]) => {
-        return translatedString.split(`{{${key}}}`).join(String(value))
-      }, translation)
+const LanguageContext = createContext<LanguageContextValue | undefined>(undefined)
+
+export function LanguageProvider({ children }: LanguageProviderProps) {
+  const [language, setLanguage] = useState(FALLBACK_LANGUAGE)
+
+  useEffect(() => {
+    document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en'
+  }, [language])
+
+  const translate = useCallback<Translator>(
+    (translationKey, replacements) => {
+      const translationTemplate =
+        getNestedTranslation(translationDictionaries[language], translationKey) ??
+        getNestedTranslation(translationDictionaries[FALLBACK_LANGUAGE], translationKey)
+
+      if (translationTemplate === undefined) return translationKey
+      if (!replacements) return translationTemplate
+
+      return Object.entries(replacements).reduce(
+        (translatedText, [placeholderKey, replacementValue]) =>
+          translatedText.replaceAll(`{{${placeholderKey}}}`, String(replacementValue)),
+        translationTemplate
+      )
     },
     [language]
   )
 
-  const value = useMemo(() => ({ language, setLanguage, t }), [language, t])
+  const languageContextValue = useMemo(() => ({ language, setLanguage, translate }), [language, translate])
 
-  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>
+  return <LanguageContext.Provider value={languageContextValue}>{children}</LanguageContext.Provider>
 }
 
 export function useLanguage() {
-  const context = useContext(LanguageContext)
-  if (context === undefined) throw new Error('useLanguage must be used within a LanguageProvider')
-  return context
+  const languageContext = useContext(LanguageContext)
+  if (languageContext === undefined) throw new Error('useLanguage must be used within a LanguageProvider')
+  return languageContext
 }

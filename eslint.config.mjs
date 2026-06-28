@@ -1,7 +1,7 @@
 import nextPlugin from 'eslint-config-next'
 
 const eslintConfig = [
-  { ignores: ['.next/**', '.idx/**', 'node_modules/**', 'dist/**', 'next-env.d.ts'] },
+  { ignores: ['.idx/**', '.next/**', 'dist/**', 'node_modules/**', 'next-env.d.ts'] },
   ...nextPlugin
 ]
 

@@ -4,26 +4,30 @@ import { Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
+  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger
+  DropdownMenuRadioItem
 } from '@/components/ui/dropdown-menu'
 import { useLanguage } from '@/lib/i18n/provider'
 
 export default function LanguageSwitcher() {
-  const { language, setLanguage } = useLanguage()
+  const { language, setLanguage, translate } = useLanguage()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Globe className="h-4 w-4" />
-          <span className="sr-only">Toggle language</span>
+        <Button variant="ghost" size="icon" aria-label={translate('languageSwitcher.toggleAriaLabel')}>
+          <Globe className="h-4 w-4" aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuRadioGroup value={language} onValueChange={(value) => setLanguage(value as 'en' | 'zh')}>
+        <DropdownMenuRadioGroup
+          value={language}
+          onValueChange={(languageValue) => {
+            if (languageValue === 'en' || languageValue === 'zh') setLanguage(languageValue)
+          }}
+        >
           <DropdownMenuRadioItem value="en">English</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="zh">简体中文</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>

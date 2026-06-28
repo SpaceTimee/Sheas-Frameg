@@ -1,32 +1,32 @@
 'use client'
 
-import { useToast } from '@/hooks/use-toast'
 import {
-  Toast,
-  ToastClose,
-  ToastDescription,
   ToastProvider,
+  Toast,
   ToastTitle,
+  ToastDescription,
+  ToastClose,
   ToastViewport
 } from '@/components/ui/toast'
+import { useToast } from '@/hooks/use-toast'
+import { useLanguage } from '@/lib/i18n/provider'
 
 export function Toaster() {
+  const { translate } = useLanguage()
   const { toasts } = useToast()
 
   return (
     <ToastProvider>
-      {toasts.map((toast) => {
-        return (
-          <Toast key={toast.id} {...toast}>
-            <div className="grid gap-1">
-              {toast.title && <ToastTitle>{toast.title}</ToastTitle>}
-              {toast.description && <ToastDescription>{toast.description}</ToastDescription>}
-            </div>
-            {toast.action}
-            <ToastClose />
-          </Toast>
-        )
-      })}
+      {toasts.map((toastEntry) => (
+        <Toast key={toastEntry.id} {...toastEntry}>
+          <div className="grid gap-1">
+            {toastEntry.title && <ToastTitle>{toastEntry.title}</ToastTitle>}
+            {toastEntry.description && <ToastDescription>{toastEntry.description}</ToastDescription>}
+          </div>
+          {toastEntry.action}
+          <ToastClose aria-label={translate('toast.closeAriaLabel')} />
+        </Toast>
+      ))}
       <ToastViewport />
     </ToastProvider>
   )

@@ -1,34 +1,33 @@
 import type { ProcessingError, VideoStatus } from '@/types/video'
 import type { Translator } from '@/lib/i18n/provider'
 
-const KILO_BYTES = 1024
-const BYTE_SIZES = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+const BYTE_UNIT_BASE = 1024
+const BYTE_UNITS = ['Bytes', 'KB', 'MB', 'GB', 'TB']
 
-export const formatBytes = (bytes: number, decimals = 2) => {
-  if (bytes === 0) return '0 Bytes'
-  const decimalPlaces = decimals < 0 ? 0 : decimals
-  const sizeIndex = Math.floor(Math.log(bytes) / Math.log(KILO_BYTES))
-  return (
-    parseFloat((bytes / Math.pow(KILO_BYTES, sizeIndex)).toFixed(decimalPlaces)) + ' ' + BYTE_SIZES[sizeIndex]
+export const formatBytes = (bytes: number, decimalPlaces = 2) => {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '0 Bytes'
+  const unitIndex = Math.min(
+    Math.max(Math.floor(Math.log(bytes) / Math.log(BYTE_UNIT_BASE)), 0),
+    BYTE_UNITS.length - 1
   )
+  return `${Number.parseFloat((bytes / BYTE_UNIT_BASE ** unitIndex).toFixed(Math.max(0, decimalPlaces)))} ${BYTE_UNITS[unitIndex]}`
 }
 
-export const getStatusMessageText = (t: Translator, status: VideoStatus) => {
-  return t(`status.${status}`)
-}
+export const getStatusText = (translate: Translator, status: VideoStatus) => translate(`status.${status}`)
 
-export const getErrorMessageText = (t: Translator, error?: ProcessingError) => {
-  if (!error) return ''
-  switch (error.type) {
+export const getErrorText = (translate: Translator, processingError?: ProcessingError) => {
+  if (!processingError) return ''
+  switch (processingError.type) {
     case 'metadata':
-      return t('errors.metadataReadError')
+      return translate('errors.metadataReadError')
     case 'shared':
-      return t('errors.sharedArrayBufferError')
+      return translate('errors.sharedArrayBufferError')
     case 'unknown':
     default:
-      if (!error.message) return t('errors.unknownProcessingErrorNoDetails')
-      return t('errors.unknownProcessingError', {
-        message: error.message
-      })
+      return processingError.message
+        ? translate('errors.unknownProcessingError', {
+            message: processingError.message
+          })
+        : translate('errors.unknownProcessingErrorNoDetails')
   }
 }

@@ -1,15 +1,21 @@
 {
-  "footerText": "Space Time ❤️ Ver. 1.0.12",
+  "footerText": "Space Time ❤️ Ver. 1.1.0",
+  "header": {
+    "homeAriaLabel": "Go to Sheas Frameg home",
+    "githubAriaLabel": "Open GitHub repository"
+  },
   "jobCard": {
     "title": "Process Videos",
     "description": "Upload videos, choose an interpolation factor, and add them to the queue. All processing runs in your browser",
+    "toggleAriaLabel": "Toggle video setup panel",
     "upload": {
       "click": "Click to upload",
       "drag": "or drag and drop video files",
-      "formats": "MP4, WEBM, MOV, and most major formats"
+      "formats": "MP4, WebM, MOV, and most major formats",
+      "inputAriaLabel": "Choose video files"
     },
     "removeFile": "Remove {{fileName}}",
-    "invalidFile": "Invalid File",
+    "invalidFile": "Invalid video",
     "factor": {
       "label": "Interpolation Factor",
       "placeholder": "Select factor",
@@ -22,20 +28,32 @@
     },
     "button": {
       "loadingFfmpeg": "Loading video engine...",
-      "addToQueue": "Add files to queue",
-      "addToQueue_singular": "Add {{count}} file to queue",
-      "addToQueue_plural": "Add {{count}} files to queue"
+      "addToQueue": "Add to queue",
+      "addToQueue_singular": "Add {{count}} video to queue",
+      "addToQueue_plural": "Add {{count}} videos to queue"
     }
   },
   "queueCard": {
     "title": "Processing Queue",
-    "description": "Your videos are processed one by one. The results will appear below",
-    "empty": "Your queue is empty",
     "factorBadge": "{{factor}}x Frames",
+    "description": "Videos are processed one by one. Processed videos appear below",
+    "empty": "Queue is empty",
     "downloadAriaLabel": "Download processed video",
     "removeAriaLabel": "Remove from queue",
     "cancelAriaLabel": "Cancel processing",
-    "limitationWarning": "Some WebM and high-resolution (>1080p) videos may cause processing errors"
+    "progressAriaLabel": "Video processing progress",
+    "closeWarningAriaLabel": "Dismiss processing warning",
+    "limitationWarning": "Some WebM and high-resolution videos above 1080p may fail to process"
+  },
+  "languageSwitcher": {
+    "toggleAriaLabel": "Change language"
+  },
+  "videoProcessor": {
+    "loading": "Loading video processor..."
+  },
+  "videoPreview": {
+    "playAriaLabel": "Play preview",
+    "pauseAriaLabel": "Pause preview"
   },
   "status": {
     "queued": "queued",
@@ -44,27 +62,28 @@
     "error": "error"
   },
   "toast": {
+    "closeAriaLabel": "Close notification",
     "ffmpegLoadFailed": {
       "title": "Video Engine Load Failed",
-      "description": "Could not load the video engine. Please try refreshing the page"
+      "description": "Could not load the video engine. Refresh the page and try again"
     },
     "invalidFileType": {
       "title": "Invalid File Type",
-      "description": "File \"{{fileName}}\" was skipped because it's not a valid video file"
+      "description": "\"{{fileName}}\" was skipped because it is not a valid video file"
     },
     "noFilesSelected": {
-      "title": "No valid files selected",
-      "description": "Please select one or more valid video files to process"
+      "title": "No Videos Selected",
+      "description": "Select one or more valid videos to process"
     },
     "errorReadingFile": {
       "title": "Error Reading {{fileName}}",
-      "description": "Could not read metadata from this video file. It has been marked as invalid"
+      "description": "Could not read metadata from this video. It has been marked as invalid"
     }
   },
   "errors": {
     "metadataReadError": "Could not read video metadata",
-    "unknownProcessingErrorNoDetails": "An unknown error occurred",
-    "unknownProcessingError": "An unknown error occurred: {{message}}",
-    "sharedArrayBufferError": "Browser configuration error (SharedArrayBuffer). Ensure HTTPS is used"
+    "unknownProcessingErrorNoDetails": "Unknown processing error",
+    "unknownProcessingError": "Unknown processing error: {{message}}",
+    "sharedArrayBufferError": "Browser configuration error: SharedArrayBuffer requires HTTPS"
   }
 }

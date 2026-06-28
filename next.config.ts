@@ -6,53 +6,54 @@ const nextConfig: NextConfig = withPWA({
   disable: process.env.NODE_ENV === 'development'
 })({
   reactStrictMode: true,
-  webpack: (config, { webpack }) => {
-    config.resolve.fallback = { fs: false, path: false, crypto: false }
-    config.module.rules.push({
+  webpack: (webpackConfig, { webpack }) => {
+    webpackConfig.resolve.fallback = {
+      ...webpackConfig.resolve.fallback,
+      fs: false,
+      path: false,
+      crypto: false
+    }
+    webpackConfig.module.rules.push({
       test: /\.wasm$/,
       type: 'asset/resource',
       generator: {
         filename: 'static/wasm/[hash][ext][query]'
       }
     })
-    config.resolve.alias = {
-      ...config.resolve.alias,
+    webpackConfig.resolve.alias = {
+      ...webpackConfig.resolve.alias,
       'MediaInfoModule.wasm': false
     }
-    config.plugins.push(
+    webpackConfig.plugins.push(
       new webpack.IgnorePlugin({
         resourceRegExp: /MediaInfoModule\.wasm$/
       })
     )
-    return config
+    return webpackConfig
   },
-  headers: async () => {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin'
-          },
-          {
-            key: 'Cross-Origin-Embedder-Policy',
-            value: 'require-corp'
-          }
-        ]
-      }
-    ]
-  },
-  rewrites: async () => {
-    return {
-      fallback: [
+  headers: () => [
+    {
+      source: '/:path*',
+      headers: [
         {
-          source: '/:path*',
-          destination: '/'
+          key: 'Cross-Origin-Opener-Policy',
+          value: 'same-origin'
+        },
+        {
+          key: 'Cross-Origin-Embedder-Policy',
+          value: 'require-corp'
         }
       ]
     }
-  }
+  ],
+  rewrites: () => ({
+    fallback: [
+      {
+        source: '/:path*',
+        destination: '/'
+      }
+    ]
+  })
 })
 
 export default nextConfig

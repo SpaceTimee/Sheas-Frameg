@@ -6,26 +6,26 @@ export interface ProcessingError {
   message?: string
 }
 
-export interface VideoFile {
+export interface VideoJob {
   id: string
   file: File
-  factor: number
+  interpolationFactor: number
   status: VideoStatus
   progress: number
-  processedUrl?: string
   originalUrl: string
-  error?: ProcessingError
+  processedUrl?: string
   isPaused: boolean
   duration?: number
   fps?: number
+  error?: ProcessingError
 }
 
-export interface SelectedFile {
+export interface SelectedVideoFile {
   id: string
   file: File
-  previewUrl: string
+  originalUrl: string
+  isPaused: boolean
   duration?: number
   fps?: number
-  isPaused: boolean
   error?: boolean
 }

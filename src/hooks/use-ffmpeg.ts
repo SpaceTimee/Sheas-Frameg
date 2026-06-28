@@ -1,3 +1,5 @@
+'use client'
+
 import { useRef, useEffect, useCallback, useState } from 'react'
 import type { FFmpeg } from '@ffmpeg/ffmpeg'
 import { toast } from '@/hooks/use-toast'
@@ -5,53 +7,55 @@ import { useLanguage } from '@/lib/i18n/provider'
 
 export function useFFmpeg() {
   const ffmpegRef = useRef<FFmpeg | null>(null)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const { t } = useLanguage()
-  const tRef = useRef(t)
+  const [isFFmpegLoaded, setIsFFmpegLoaded] = useState(false)
+  const { translate } = useLanguage()
+  const translateRef = useRef(translate)
 
   useEffect(() => {
-    tRef.current = t
-  }, [t])
+    translateRef.current = translate
+  }, [translate])
 
-  const load = useCallback(async () => {
+  const loadFFmpeg = useCallback(async () => {
     if (ffmpegRef.current?.loaded) {
-      setIsLoaded(true)
+      setIsFFmpegLoaded(true)
       return
     }
 
     try {
       const { FFmpeg } = await import('@ffmpeg/ffmpeg')
-      const ffmpeg = new FFmpeg()
-      await ffmpeg.load()
-      ffmpegRef.current = ffmpeg
-      setIsLoaded(true)
-    } catch (error) {
+      const ffmpegInstance = new FFmpeg()
+      await ffmpegInstance.load()
+      ffmpegRef.current = ffmpegInstance
+      setIsFFmpegLoaded(true)
+    } catch {
       ffmpegRef.current = null
-      setIsLoaded(false)
+      setIsFFmpegLoaded(false)
       toast({
         variant: 'destructive',
-        title: tRef.current('toast.ffmpegLoadFailed.title'),
-        description: tRef.current('toast.ffmpegLoadFailed.description')
+        title: translateRef.current('toast.ffmpegLoadFailed.title'),
+        description: translateRef.current('toast.ffmpegLoadFailed.description')
       })
     }
   }, [])
 
   useEffect(() => {
-    load()
+    const loadFFmpegTimeoutId = setTimeout(() => {
+      void loadFFmpeg()
+    }, 0)
+
     return () => {
+      clearTimeout(loadFFmpegTimeoutId)
       ffmpegRef.current?.terminate()
-      setIsLoaded(false)
-    }
-  }, [load])
-
-  const reset = useCallback(async () => {
-    if (ffmpegRef.current) {
-      ffmpegRef.current.terminate()
       ffmpegRef.current = null
-      setIsLoaded(false)
     }
-    await load()
-  }, [load])
+  }, [loadFFmpeg])
 
-  return { ffmpegRef, isLoaded, reset }
+  const resetFFmpeg = useCallback(async () => {
+    ffmpegRef.current?.terminate()
+    ffmpegRef.current = null
+    setIsFFmpegLoaded(false)
+    await loadFFmpeg()
+  }, [loadFFmpeg])
+
+  return { ffmpegRef, isFFmpegLoaded, resetFFmpeg }
 }

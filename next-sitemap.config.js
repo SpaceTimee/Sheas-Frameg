@@ -1,5 +1,7 @@
 /** @type {import('next-sitemap').IConfig} */
-module.exports = {
+const nextSitemapConfig = {
   siteUrl: 'https://frameg.spacetimee.xyz',
   generateRobotsTxt: true
 }
+
+export default nextSitemapConfig

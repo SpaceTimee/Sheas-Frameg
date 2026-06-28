@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@config "../../tailwind.config.ts";
 
 @layer base {
   :root {
@@ -47,11 +46,11 @@
     --input: 240 4% 15%;
     --ring: 95 42% 65%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
+    scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
+    scrollbar-width: thin;
   }
   body {
     @apply bg-background text-foreground;
@@ -84,7 +83,7 @@
     0%,
     100% {
       color: hsl(var(--muted-foreground) / 0.5);
-      filter: drop-shadow(0 0 0px hsl(var(--primary) / 0));
+      filter: drop-shadow(0 0 0 hsl(var(--primary) / 0));
     }
     50% {
       color: hsl(var(--primary));

@@ -1,41 +1,59 @@
 {
-  "footerText": "Space Time ❤️ Ver. 1.0.12",
+  "footerText": "Space Time ❤️ Ver. 1.1.0",
+  "header": {
+    "homeAriaLabel": "返回 Sheas Frameg 首页",
+    "githubAriaLabel": "打开 GitHub 仓库"
+  },
   "jobCard": {
     "title": "处理视频",
     "description": "上传视频，选择插帧倍数，然后将它们添加到队列中。所有处理都在你的浏览器中完成",
+    "toggleAriaLabel": "展开或收起视频设置",
     "upload": {
       "click": "点击上传",
       "drag": "或拖放视频文件",
-      "formats": "支持 MP4、WEBM、MOV 等主流格式"
+      "formats": "支持 MP4、WebM、MOV 等主流格式",
+      "inputAriaLabel": "选择视频文件"
     },
     "removeFile": "移除 {{fileName}}",
-    "invalidFile": "无效文件",
+    "invalidFile": "无效视频",
     "factor": {
       "label": "插帧倍数",
       "placeholder": "选择倍数",
-      "2x": "2 倍帧数",
-      "3x": "3 倍帧数",
-      "4x": "4 倍帧数",
-      "5x": "5 倍帧数",
-      "6x": "6 倍帧数",
-      "8x": "8 倍帧数"
+      "2x": "2 倍帧率",
+      "3x": "3 倍帧率",
+      "4x": "4 倍帧率",
+      "5x": "5 倍帧率",
+      "6x": "6 倍帧率",
+      "8x": "8 倍帧率"
     },
     "button": {
       "loadingFfmpeg": "正在加载视频引擎...",
-      "addToQueue": "添加文件到队列",
-      "addToQueue_singular": "添加 {{count}} 个文件到队列",
-      "addToQueue_plural": "添加 {{count}} 个文件到队列"
+      "addToQueue": "添加到队列",
+      "addToQueue_singular": "添加 {{count}} 个视频到队列",
+      "addToQueue_plural": "添加 {{count}} 个视频到队列"
     }
   },
   "queueCard": {
     "title": "处理队列",
-    "description": "你的视频会按顺序逐一处理，结果将显示在下方",
-    "empty": "你的队列是空的",
-    "factorBadge": "{{factor}} 倍帧数",
+    "description": "视频会按顺序逐一处理，处理结果将显示在下方",
+    "empty": "队列为空",
+    "factorBadge": "{{factor}} 倍帧率",
     "downloadAriaLabel": "下载处理后的视频",
-    "removeAriaLabel": "从队列中移除",
-    "cancelAriaLabel": "取消处理",
-    "limitationWarning": "部分 WebM 和高分辨率 (>1080p) 视频可能导致处理错误"
+    "removeAriaLabel": "从队列中移除视频",
+    "cancelAriaLabel": "取消视频处理",
+    "progressAriaLabel": "视频处理进度",
+    "closeWarningAriaLabel": "关闭处理警告",
+    "limitationWarning": "部分 WebM 和高于 1080p 的高分辨率视频可能处理失败"
+  },
+  "languageSwitcher": {
+    "toggleAriaLabel": "切换界面语言"
+  },
+  "videoProcessor": {
+    "loading": "正在加载视频处理器..."
+  },
+  "videoPreview": {
+    "playAriaLabel": "播放视频预览",
+    "pauseAriaLabel": "暂停视频预览"
   },
   "status": {
     "queued": "排队中",
@@ -44,27 +62,28 @@
     "error": "错误"
   },
   "toast": {
+    "closeAriaLabel": "关闭通知",
     "ffmpegLoadFailed": {
       "title": "视频引擎加载失败",
-      "description": "无法加载视频引擎。请尝试刷新页面"
+      "description": "无法加载视频引擎，请刷新页面后重试"
     },
     "invalidFileType": {
       "title": "无效的文件类型",
-      "description": "文件 \"{{fileName}}\" 已被跳过，因为它不是一个有效的视频文件"
+      "description": "“{{fileName}}”已跳过，因为它不是有效的视频文件"
     },
     "noFilesSelected": {
-      "title": "未选择有效文件",
-      "description": "请选择一个或多个要处理的有效视频文件"
+      "title": "未选择有效视频",
+      "description": "请选择一个或多个要处理的有效视频"
     },
     "errorReadingFile": {
       "title": "读取文件 {{fileName}} 出错",
-      "description": "无法从此视频文件读取元数据。该文件已被标记为无效"
+      "description": "无法从此视频读取元数据，该视频已被标记为无效"
     }
   },
   "errors": {
     "metadataReadError": "无法读取视频元数据",
-    "unknownProcessingErrorNoDetails": "处理过程中发生未知错误",
-    "unknownProcessingError": "处理过程中发生未知错误: {{message}}",
-    "sharedArrayBufferError": "浏览器配置错误 (SharedArrayBuffer)。请确保使用 HTTPS"
+    "unknownProcessingErrorNoDetails": "未知处理错误",
+    "unknownProcessingError": "未知处理错误：{{message}}",
+    "sharedArrayBufferError": "浏览器配置错误：SharedArrayBuffer 需要 HTTPS"
   }
 }

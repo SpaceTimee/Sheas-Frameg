@@ -1,7 +1,8 @@
 import type { Config } from 'tailwindcss'
+import animate from 'tailwindcss-animate'
 
 export default {
-  darkMode: ['class'],
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -56,8 +57,22 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)'
+      },
+      keyframes: {
+        'collapsible-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-collapsible-content-height)' }
+        },
+        'collapsible-up': {
+          from: { height: 'var(--radix-collapsible-content-height)' },
+          to: { height: '0' }
+        }
+      },
+      animation: {
+        'collapsible-down': 'collapsible-down 0.3s ease-out',
+        'collapsible-up': 'collapsible-up 0.3s ease-out'
       }
     }
   },
-  plugins: [require('tailwindcss-animate')]
+  plugins: [animate]
 } satisfies Config
