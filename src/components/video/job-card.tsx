@@ -6,9 +6,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
+import { useAnimatedList } from '@/hooks/use-animated-list'
 import { useLanguage } from '@/lib/i18n/provider'
 import { mergeClassNames } from '@/lib/utils'
 import type { SelectedVideoFile } from '@/types/video'
+import { AnimatedHeight } from './animated-height'
 import SelectedVideoFileItem from './file-item'
 import FileUploader from './file-uploader'
 import ProcessingWarning from './processing-warning'
@@ -44,6 +46,10 @@ export default function JobCard({
 }: JobCardProps) {
   const { translate } = useLanguage()
   const [isProcessingWarningVisible, setIsProcessingWarningVisible] = useState(true)
+  const {
+    animatedItems: animatedSelectedVideoFiles,
+    handleTransitionEnd: handleSelectedVideoFileTransitionEnd
+  } = useAnimatedList(selectedVideoFiles)
   const validSelectedVideoFileCount = selectedVideoFiles.filter(
     (selectedVideoFile) => !selectedVideoFile.error
   ).length
@@ -101,15 +107,21 @@ export default function JobCard({
             <CardContent className="space-y-6 pt-2">
               <FileUploader videoFileInputRef={videoFileInputRef} onVideoFilesChange={onVideoFilesChange} />
 
-              {selectedVideoFiles.length > 0 && (
-                <ul className="divide-y divide-border">
-                  {selectedVideoFiles.map((selectedVideoFile) => (
-                    <li key={selectedVideoFile.id} className="py-4 first:pt-0 last:pb-0">
-                      <SelectedVideoFileItem
-                        selectedVideoFile={selectedVideoFile}
-                        onRemove={onRemoveSelectedVideoFile}
-                        onTogglePlayPause={onToggleSelectedVideoFilePlayPause}
-                      />
+              {animatedSelectedVideoFiles.length > 0 && (
+                <ul>
+                  {animatedSelectedVideoFiles.map((selectedVideoFile, index) => (
+                    <li key={selectedVideoFile.id}>
+                      <AnimatedHeight
+                        isOpen={selectedVideoFile.isOpen}
+                        onTransitionEnd={() => handleSelectedVideoFileTransitionEnd(selectedVideoFile.id)}
+                        innerClassName={index === 0 ? 'pb-4' : 'py-4 border-t border-border'}
+                      >
+                        <SelectedVideoFileItem
+                          selectedVideoFile={selectedVideoFile}
+                          onRemove={onRemoveSelectedVideoFile}
+                          onTogglePlayPause={onToggleSelectedVideoFilePlayPause}
+                        />
+                      </AnimatedHeight>
                     </li>
                   ))}
                 </ul>

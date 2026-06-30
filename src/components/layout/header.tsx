@@ -23,10 +23,10 @@ export default function Header() {
   }, [])
 
   return (
-    <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
+    <header className="border-b bg-card/80 shadow-sm backdrop-blur-sm sticky top-0 z-50">
       <div
         className={mergeClassNames(
-          'container mx-auto flex items-center justify-between px-8 transition-all duration-300',
+          'container mx-auto flex items-center justify-between px-8 ease-out transition-all duration-300',
           hasScrolled ? 'h-14' : 'h-16'
         )}
       >

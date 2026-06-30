@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @config "../../tailwind.config.ts";
 
+@custom-variant focus-visible-within (&:where(:has(:focus-visible)));
+
 @layer base {
   :root {
     --background: 60 56% 91%;

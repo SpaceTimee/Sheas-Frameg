@@ -2,8 +2,11 @@
 
 import { ListVideo } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { useAnimatedList } from '@/hooks/use-animated-list'
 import { useLanguage } from '@/lib/i18n/provider'
 import type { VideoJob } from '@/types/video'
+import { ContentSwitch } from './content-switch'
+import { AnimatedHeight } from './animated-height'
 import VideoJobItem from './queue-item'
 
 interface QueueCardProps {
@@ -15,6 +18,9 @@ interface QueueCardProps {
 
 export default function QueueCard({ videoJobs, ...queueItemHandlers }: QueueCardProps) {
   const { translate } = useLanguage()
+  const { animatedItems, handleTransitionEnd } = useAnimatedList(videoJobs)
+
+  const isEmpty = animatedItems.length === 0
 
   return (
     <Card>
@@ -26,17 +32,30 @@ export default function QueueCard({ videoJobs, ...queueItemHandlers }: QueueCard
       </CardHeader>
       <CardDescription className="px-6 pb-4">{translate('queueCard.description')}</CardDescription>
       <CardContent className="pt-2">
-        {videoJobs.length === 0 ? (
-          <p className="text-center py-12 text-muted-foreground text-sm">{translate('queueCard.empty')}</p>
-        ) : (
-          <ul className="divide-y divide-border">
-            {videoJobs.map((videoJob) => (
-              <li key={videoJob.id} className="py-4 first:pt-0 last:pb-0">
-                <VideoJobItem videoJob={videoJob} {...queueItemHandlers} />
-              </li>
-            ))}
-          </ul>
-        )}
+        <ContentSwitch
+          contentKey={isEmpty ? 'empty' : 'list'}
+          renderContent={(key) =>
+            key === 'empty' ? (
+              <p className="text-center py-12 text-muted-foreground text-sm">
+                {translate('queueCard.empty')}
+              </p>
+            ) : (
+              <ul>
+                {animatedItems.map((animatedVideoJob, index) => (
+                  <li key={animatedVideoJob.id}>
+                    <AnimatedHeight
+                      isOpen={animatedVideoJob.isOpen}
+                      onTransitionEnd={() => handleTransitionEnd(animatedVideoJob.id)}
+                      innerClassName={index === 0 ? 'pb-4' : 'py-4 border-t border-border'}
+                    >
+                      <VideoJobItem videoJob={animatedVideoJob} {...queueItemHandlers} />
+                    </AnimatedHeight>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        />
       </CardContent>
     </Card>
   )
