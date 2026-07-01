@@ -1,5 +1,5 @@
 {
-  "footerText": "Space Time ❤️ Ver. 1.1.1",
+  "footerText": "Space Time ❤️ Ver. 1.1.2",
   "header": {
     "homeAriaLabel": "Go to Sheas Frameg home",
     "githubAriaLabel": "Open GitHub repository"
@@ -19,12 +19,7 @@
     "factor": {
       "label": "Interpolation Factor",
       "placeholder": "Select factor",
-      "2x": "2x Frames",
-      "3x": "3x Frames",
-      "4x": "4x Frames",
-      "5x": "5x Frames",
-      "6x": "6x Frames",
-      "8x": "8x Frames"
+      "option": "{{factor}}x Frames"
     },
     "button": {
       "loadingFfmpeg": "Loading video engine...",
@@ -48,12 +43,21 @@
   "languageSwitcher": {
     "toggleAriaLabel": "Change language"
   },
+  "themeSwitcher": {
+    "toggleAriaLabel": "Toggle theme"
+  },
   "videoProcessor": {
     "loading": "Loading video processor..."
   },
   "videoPreview": {
     "playAriaLabel": "Play preview",
     "pauseAriaLabel": "Pause preview"
+  },
+  "nameField": {
+    "renameAriaLabel": "Rename video file",
+    "editAriaLabel": "Edit video file name",
+    "confirmAriaLabel": "Confirm rename",
+    "cancelAriaLabel": "Cancel rename"
   },
   "status": {
     "queued": "queued",

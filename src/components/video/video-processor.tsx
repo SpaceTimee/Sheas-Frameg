@@ -21,7 +21,9 @@ export default function VideoProcessor() {
     handleRemoveVideoJob,
     handleCancelProcessing,
     handleToggleSelectedVideoFilePlayPause,
-    handleToggleVideoJobPlayPause
+    handleToggleVideoJobPlayPause,
+    handleRenameSelectedVideoFile,
+    handleRenameVideoJob
   } = useVideoProcessor()
 
   return (
@@ -38,6 +40,7 @@ export default function VideoProcessor() {
         onVideoFilesChange={handleVideoFilesChange}
         onRemoveSelectedVideoFile={handleRemoveSelectedVideoFile}
         onToggleSelectedVideoFilePlayPause={handleToggleSelectedVideoFilePlayPause}
+        onRenameSelectedVideoFile={handleRenameSelectedVideoFile}
         onAddToQueue={handleAddToQueue}
       />
       <QueueCard
@@ -45,6 +48,7 @@ export default function VideoProcessor() {
         onRemove={handleRemoveVideoJob}
         onCancel={handleCancelProcessing}
         onTogglePlayPause={handleToggleVideoJobPlayPause}
+        onRename={handleRenameVideoJob}
       />
     </div>
   )

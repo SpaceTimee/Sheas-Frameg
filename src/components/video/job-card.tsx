@@ -15,6 +15,8 @@ import SelectedVideoFileItem from './file-item'
 import FileUploader from './file-uploader'
 import ProcessingWarning from './processing-warning'
 
+const INTERPOLATION_FACTORS = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+
 interface JobCardProps {
   isJobCardOpen: boolean
   isFFmpegLoaded: boolean
@@ -27,6 +29,7 @@ interface JobCardProps {
   onVideoFilesChange: (fileList: FileList | null) => void
   onRemoveSelectedVideoFile: (selectedVideoFileId: string) => void
   onToggleSelectedVideoFilePlayPause: (selectedVideoFileId: string) => void
+  onRenameSelectedVideoFile: (selectedVideoFileId: string, customName: string) => void
   onAddToQueue: () => void
 }
 
@@ -42,6 +45,7 @@ export default function JobCard({
   onVideoFilesChange,
   onRemoveSelectedVideoFile,
   onToggleSelectedVideoFilePlayPause,
+  onRenameSelectedVideoFile,
   onAddToQueue
 }: JobCardProps) {
   const { translate } = useLanguage()
@@ -97,29 +101,29 @@ export default function JobCard({
             </CollapsibleTrigger>
           </div>
           <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
-            <CardDescription className="px-6 pb-4">{translate('jobCard.description')}</CardDescription>
+            <CardContent className="space-y-6 px-6 pb-6">
+              <CardDescription>{translate('jobCard.description')}</CardDescription>
 
-            <ProcessingWarning
-              isVisible={isProcessingWarningVisible}
-              onDismiss={() => setIsProcessingWarningVisible(false)}
-            />
+              <ProcessingWarning
+                isVisible={isProcessingWarningVisible}
+                onDismiss={() => setIsProcessingWarningVisible(false)}
+              />
 
-            <CardContent className="space-y-6 pt-2">
               <FileUploader videoFileInputRef={videoFileInputRef} onVideoFilesChange={onVideoFilesChange} />
 
               {animatedSelectedVideoFiles.length > 0 && (
-                <ul>
-                  {animatedSelectedVideoFiles.map((selectedVideoFile, index) => (
+                <ul className="space-y-6">
+                  {animatedSelectedVideoFiles.map((selectedVideoFile) => (
                     <li key={selectedVideoFile.id}>
                       <AnimatedHeight
                         isOpen={selectedVideoFile.isOpen}
                         onTransitionEnd={() => handleSelectedVideoFileTransitionEnd(selectedVideoFile.id)}
-                        innerClassName={index === 0 ? 'pb-4' : 'py-4 border-t border-border'}
                       >
                         <SelectedVideoFileItem
                           selectedVideoFile={selectedVideoFile}
                           onRemove={onRemoveSelectedVideoFile}
                           onTogglePlayPause={onToggleSelectedVideoFilePlayPause}
+                          onRename={onRenameSelectedVideoFile}
                         />
                       </AnimatedHeight>
                     </li>
@@ -128,7 +132,7 @@ export default function JobCard({
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                <div className="grid gap-1">
+                <div className="grid gap-2">
                   <label htmlFor="interpolation-factor" className="text-sm font-medium">
                     {translate('jobCard.factor.label')}
                   </label>
@@ -140,12 +144,11 @@ export default function JobCard({
                       <SelectValue placeholder={translate('jobCard.factor.placeholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="2">{translate('jobCard.factor.2x')}</SelectItem>
-                      <SelectItem value="3">{translate('jobCard.factor.3x')}</SelectItem>
-                      <SelectItem value="4">{translate('jobCard.factor.4x')}</SelectItem>
-                      <SelectItem value="5">{translate('jobCard.factor.5x')}</SelectItem>
-                      <SelectItem value="6">{translate('jobCard.factor.6x')}</SelectItem>
-                      <SelectItem value="8">{translate('jobCard.factor.8x')}</SelectItem>
+                      {INTERPOLATION_FACTORS.map((factor) => (
+                        <SelectItem key={factor} value={String(factor)}>
+                          {translate('jobCard.factor.option', { factor })}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

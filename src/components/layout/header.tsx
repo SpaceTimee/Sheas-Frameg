@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { GitFork } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import LanguageSwitcher from '@/components/language-switcher'
+import ThemeSwitcher from '@/components/theme-switcher'
 import { useLanguage } from '@/lib/i18n/provider'
 import { mergeClassNames } from '@/lib/utils'
 import appIcon from '@/app/icon.png'
@@ -50,6 +51,7 @@ export default function Header() {
             </Link>
           </Button>
           <LanguageSwitcher />
+          <ThemeSwitcher />
         </nav>
       </div>
     </header>

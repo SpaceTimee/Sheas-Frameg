@@ -14,6 +14,7 @@ interface QueueCardProps {
   onRemove: (videoJobId: string) => void
   onCancel: (videoJobId: string) => void
   onTogglePlayPause: (videoJobId: string) => void
+  onRename: (videoJobId: string, customName: string) => void
 }
 
 export default function QueueCard({ videoJobs, ...queueItemHandlers }: QueueCardProps) {
@@ -30,8 +31,8 @@ export default function QueueCard({ videoJobs, ...queueItemHandlers }: QueueCard
           {translate('queueCard.title')}
         </CardTitle>
       </CardHeader>
-      <CardDescription className="px-6 pb-4">{translate('queueCard.description')}</CardDescription>
-      <CardContent className="pt-2">
+      <CardContent className="space-y-6 px-6 pb-6">
+        <CardDescription>{translate('queueCard.description')}</CardDescription>
         <ContentSwitch
           contentKey={isEmpty ? 'empty' : 'list'}
           renderContent={(key) =>
@@ -40,13 +41,12 @@ export default function QueueCard({ videoJobs, ...queueItemHandlers }: QueueCard
                 {translate('queueCard.empty')}
               </p>
             ) : (
-              <ul>
-                {animatedItems.map((animatedVideoJob, index) => (
+              <ul className="space-y-6">
+                {animatedItems.map((animatedVideoJob) => (
                   <li key={animatedVideoJob.id}>
                     <AnimatedHeight
                       isOpen={animatedVideoJob.isOpen}
                       onTransitionEnd={() => handleTransitionEnd(animatedVideoJob.id)}
-                      innerClassName={index === 0 ? 'pb-4' : 'py-4 border-t border-border'}
                     >
                       <VideoJobItem videoJob={animatedVideoJob} {...queueItemHandlers} />
                     </AnimatedHeight>

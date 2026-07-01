@@ -117,6 +117,7 @@ export function useVideoProcessor() {
       ...validSelectedVideoFiles.map((selectedVideoFile): VideoJob => ({
         id: crypto.randomUUID(),
         file: selectedVideoFile.file,
+        customName: selectedVideoFile.customName,
         interpolationFactor,
         status: 'queued',
         progress: 0,
@@ -274,6 +275,21 @@ export function useVideoProcessor() {
     [togglePausedState]
   )
 
+  const handleRenameSelectedVideoFile = useCallback((selectedVideoFileId: string, customName: string) => {
+    setSelectedVideoFiles((currentSelectedVideoFiles) =>
+      currentSelectedVideoFiles.map((selectedVideoFile) =>
+        selectedVideoFile.id === selectedVideoFileId
+          ? { ...selectedVideoFile, customName }
+          : selectedVideoFile
+      )
+    )
+  }, [])
+
+  const handleRenameVideoJob = useCallback(
+    (videoJobId: string, customName: string) => updateVideoJob(videoJobId, { customName }),
+    [updateVideoJob]
+  )
+
   return {
     videoJobs,
     selectedVideoFiles,
@@ -290,6 +306,8 @@ export function useVideoProcessor() {
     handleRemoveVideoJob,
     handleCancelProcessing,
     handleToggleSelectedVideoFilePlayPause,
-    handleToggleVideoJobPlayPause
+    handleToggleVideoJobPlayPause,
+    handleRenameSelectedVideoFile,
+    handleRenameVideoJob
   }
 }

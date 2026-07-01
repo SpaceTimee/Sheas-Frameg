@@ -9,6 +9,7 @@ export interface ProcessingError {
 export interface VideoJob {
   id: string
   file: File
+  customName?: string
   interpolationFactor: number
   status: VideoStatus
   progress: number
@@ -23,6 +24,7 @@ export interface VideoJob {
 export interface SelectedVideoFile {
   id: string
   file: File
+  customName?: string
   originalUrl: string
   isPaused: boolean
   duration?: number

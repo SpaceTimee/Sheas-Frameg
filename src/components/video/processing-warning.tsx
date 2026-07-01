@@ -15,7 +15,7 @@ export default function ProcessingWarning({ isVisible, onDismiss }: ProcessingWa
   return (
     <Collapsible open={isVisible}>
       <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
-        <div className="px-6 pb-4">
+        <div>
           <div
             role="note"
             className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-md border border-border/50"

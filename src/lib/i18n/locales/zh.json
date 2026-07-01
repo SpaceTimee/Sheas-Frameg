@@ -1,5 +1,5 @@
 {
-  "footerText": "Space Time ❤️ Ver. 1.1.1",
+  "footerText": "Space Time ❤️ Ver. 1.1.2",
   "header": {
     "homeAriaLabel": "返回 Sheas Frameg 首页",
     "githubAriaLabel": "打开 GitHub 仓库"
@@ -19,12 +19,7 @@
     "factor": {
       "label": "插帧倍数",
       "placeholder": "选择倍数",
-      "2x": "2 倍帧率",
-      "3x": "3 倍帧率",
-      "4x": "4 倍帧率",
-      "5x": "5 倍帧率",
-      "6x": "6 倍帧率",
-      "8x": "8 倍帧率"
+      "option": "{{factor}} 倍帧率"
     },
     "button": {
       "loadingFfmpeg": "正在加载视频引擎...",
@@ -48,12 +43,21 @@
   "languageSwitcher": {
     "toggleAriaLabel": "切换界面语言"
   },
+  "themeSwitcher": {
+    "toggleAriaLabel": "切换界面主题"
+  },
   "videoProcessor": {
     "loading": "正在加载视频处理器..."
   },
   "videoPreview": {
     "playAriaLabel": "播放视频预览",
     "pauseAriaLabel": "暂停视频预览"
+  },
+  "nameField": {
+    "renameAriaLabel": "重命名视频文件",
+    "editAriaLabel": "编辑视频文件名",
+    "confirmAriaLabel": "确认重命名",
+    "cancelAriaLabel": "取消重命名"
   },
   "status": {
     "queued": "排队中",

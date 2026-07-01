@@ -9,9 +9,10 @@ import { Separator } from '@/components/ui/separator'
 import { downloadFile } from '@/lib/download'
 import { useLanguage } from '@/lib/i18n/provider'
 import { formatBytes, getStatusText, getErrorText } from '@/lib/formatters'
-import { insertFilenameSuffix } from '@/lib/utils'
+import { buildDownloadFileName, resolveDisplayName } from '@/lib/utils'
 import type { VideoJob, VideoStatus } from '@/types/video'
 import VideoPreview from './video-preview'
+import NameField from './name-field'
 
 const VIDEO_STATUS_ICONS = {
   queued: <Clock className="h-5 w-5 text-yellow-500" aria-hidden="true" />,
@@ -25,11 +26,13 @@ interface VideoJobItemProps {
   onRemove: (videoJobId: string) => void
   onCancel: (videoJobId: string) => void
   onTogglePlayPause: (videoJobId: string) => void
+  onRename: (videoJobId: string, customName: string) => void
 }
 
-function VideoJobItem({ videoJob, onRemove, onCancel, onTogglePlayPause }: VideoJobItemProps) {
+function VideoJobItem({ videoJob, onRemove, onCancel, onTogglePlayPause, onRename }: VideoJobItemProps) {
   const { translate } = useLanguage()
 
+  const displayName = resolveDisplayName(videoJob.customName, videoJob.file)
   const videoJobErrorText = getErrorText(translate, videoJob.error)
 
   return (
@@ -40,11 +43,13 @@ function VideoJobItem({ videoJob, onRemove, onCancel, onTogglePlayPause }: Video
         onTogglePlayPause={() => onTogglePlayPause(videoJob.id)}
       />
       <div className="flex-1 w-full min-w-0">
-        <div className="flex justify-between items-start">
-          <p title={videoJob.file.name} className="font-medium truncate pr-4">
-            {videoJob.file.name}
-          </p>
-          <Badge variant="secondary" className="whitespace-nowrap">
+        <div className="flex justify-between items-center gap-2">
+          <NameField
+            displayName={displayName}
+            fileName={videoJob.file.name}
+            onRename={(customName) => onRename(videoJob.id, customName)}
+          />
+          <Badge variant="secondary" className="whitespace-nowrap shrink-0">
             {translate('queueCard.factorBadge', { factor: videoJob.interpolationFactor })}
           </Badge>
         </div>
@@ -84,7 +89,7 @@ function VideoJobItem({ videoJob, onRemove, onCancel, onTogglePlayPause }: Video
                   if (!videoJob.processedUrl) return
                   downloadFile(
                     videoJob.processedUrl,
-                    insertFilenameSuffix(videoJob.file.name, '-interpolated')
+                    buildDownloadFileName(displayName, videoJob.file.name, '-interpolated')
                   )
                 }}
               >
