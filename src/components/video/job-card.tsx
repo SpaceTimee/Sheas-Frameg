@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, type RefObject } from 'react'
-import { FileVideo, ChevronUp, Loader2, ArrowDownCircle } from 'lucide-react'
+import { FileVideo, ChevronUp, Loader2, SquareArrowDown } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
@@ -10,12 +10,12 @@ import { useAnimatedList } from '@/hooks/use-animated-list'
 import { useLanguage } from '@/lib/i18n/provider'
 import { mergeClassNames } from '@/lib/utils'
 import type { SelectedVideoFile } from '@/types/video'
-import { AnimatedHeight } from './animated-height'
-import SelectedVideoFileItem from './file-item'
-import FileUploader from './file-uploader'
-import ProcessingWarning from './processing-warning'
+import { AnimatedHeight } from '@/components/video/animated-height'
+import SelectedVideoFileItem from '@/components/video/file-item'
+import FileUploader from '@/components/video/file-uploader'
+import ProcessingWarning from '@/components/video/processing-warning'
 
-const INTERPOLATION_FACTORS = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+const INTERPOLATION_FACTORS = [2, 3, 4, 5, 6, 7, 8, 9, 10] as const
 
 interface JobCardProps {
   isJobCardOpen: boolean
@@ -76,9 +76,9 @@ export default function JobCard({
     <>
       <Collapsible open={isJobCardOpen} onOpenChange={setIsJobCardOpen}>
         <Card>
-          <div className="flex justify-between items-center pr-6">
+          <div className="flex items-center justify-between pr-6">
             <CardHeader>
-              <CardTitle className="font-headline text-xl flex items-center gap-2">
+              <CardTitle className="font-headline flex items-center gap-2 text-xl">
                 <FileVideo aria-hidden="true" />
                 {translate('jobCard.title')}
               </CardTitle>
@@ -92,7 +92,7 @@ export default function JobCard({
               >
                 <ChevronUp
                   className={mergeClassNames(
-                    'transition-transform text-muted-foreground',
+                    'text-muted-foreground transition-transform',
                     !isJobCardOpen && 'rotate-180'
                   )}
                   aria-hidden="true"
@@ -100,27 +100,28 @@ export default function JobCard({
               </Button>
             </CollapsibleTrigger>
           </div>
-          <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+          <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden">
             <CardContent className="space-y-6 px-6 pb-6">
               <CardDescription>{translate('jobCard.description')}</CardDescription>
 
-              <ProcessingWarning
-                isVisible={isProcessingWarningVisible}
-                onDismiss={() => setIsProcessingWarningVisible(false)}
-              />
-
-              <FileUploader videoFileInputRef={videoFileInputRef} onVideoFilesChange={onVideoFilesChange} />
+              <div>
+                <ProcessingWarning
+                  isVisible={isProcessingWarningVisible}
+                  onDismiss={() => setIsProcessingWarningVisible(false)}
+                />
+                <FileUploader videoFileInputRef={videoFileInputRef} onVideoFilesChange={onVideoFilesChange} />
+              </div>
 
               {animatedSelectedVideoFiles.length > 0 && (
                 <ul className="space-y-6">
-                  {animatedSelectedVideoFiles.map((selectedVideoFile) => (
-                    <li key={selectedVideoFile.id}>
+                  {animatedSelectedVideoFiles.map(({ item, isOpen }) => (
+                    <li key={item.id}>
                       <AnimatedHeight
-                        isOpen={selectedVideoFile.isOpen}
-                        onTransitionEnd={() => handleSelectedVideoFileTransitionEnd(selectedVideoFile.id)}
+                        isOpen={isOpen}
+                        onTransitionEnd={() => handleSelectedVideoFileTransitionEnd(item.id)}
                       >
                         <SelectedVideoFileItem
-                          selectedVideoFile={selectedVideoFile}
+                          selectedVideoFile={item}
                           onRemove={onRemoveSelectedVideoFile}
                           onTogglePlayPause={onToggleSelectedVideoFilePlayPause}
                           onRename={onRenameSelectedVideoFile}
@@ -131,7 +132,7 @@ export default function JobCard({
                 </ul>
               )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+              <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-3">
                 <div className="grid gap-2">
                   <label htmlFor="interpolation-factor" className="text-sm font-medium">
                     {translate('jobCard.factor.label')}
@@ -158,7 +159,7 @@ export default function JobCard({
                     className="w-full"
                     onClick={onAddToQueue}
                   >
-                    {isFFmpegLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                    {isFFmpegLoading && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
                     {addToQueueButtonLabel}
                   </Button>
                 </div>
@@ -167,11 +168,11 @@ export default function JobCard({
           </CollapsibleContent>
         </Card>
       </Collapsible>
-      <div className="flex justify-center my-4">
+      <div className="my-4 flex justify-center">
         <div className={isJobCardOpen ? undefined : 'hidden'}>
-          <ArrowDownCircle
+          <SquareArrowDown
             className={mergeClassNames(
-              'h-8 w-8 text-muted-foreground/50',
+              'text-muted-foreground/50 size-8',
               isQueueArrowGlowing && 'animate-neon-glow'
             )}
             aria-hidden="true"

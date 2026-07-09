@@ -1,7 +1,11 @@
 @import 'tailwindcss';
-@config "../../tailwind.config.ts";
+@config '../../tailwind.config.ts';
 
 @custom-variant focus-visible-within (&:where(:has(:focus-visible)));
+
+@theme {
+  --font-sans: var(--font-inter), var(--font-noto-sc), ui-sans-serif, system-ui, sans-serif;
+}
 
 @layer base {
   :root {
@@ -54,6 +58,7 @@
     scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
     scrollbar-width: thin;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -72,7 +77,7 @@
 
   ::-webkit-scrollbar-thumb {
     background: hsl(var(--primary));
-    border-radius: 10px;
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -95,5 +100,16 @@
 
   .animate-neon-glow {
     animation: neon-glow 1s ease-in-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -18,8 +18,7 @@ export function splitFileName(fileName: string): { stem: string; extension: stri
 }
 
 export function resolveDisplayName(customName: string | undefined, file: File): string {
-  const trimmed = customName?.trim()
-  return trimmed ? trimmed : file.name
+  return customName?.trim() || file.name
 }
 
 export function buildDownloadFileName(displayName: string, fileName: string, suffix: string): string {

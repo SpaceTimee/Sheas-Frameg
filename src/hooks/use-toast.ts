@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useSyncExternalStore, type ReactNode } from 'react'
 import type { ToastActionElement, ToastProps } from '@/components/ui/toast'
 
 const TOAST_LIMIT = 1
@@ -19,8 +19,6 @@ const toastActionTypes = {
   DISMISS_TOAST: 'DISMISS_TOAST',
   REMOVE_TOAST: 'REMOVE_TOAST'
 } as const
-
-let toastIdCounter = 0
 
 type ToastActionType = typeof toastActionTypes
 
@@ -109,20 +107,26 @@ const toastReducer = (currentToastState: ToastState, action: ToastReducerAction)
   }
 }
 
-const toastStateListeners = new Set<(toastState: ToastState) => void>()
+const toastStateListeners = new Set<() => void>()
 
 let toastMemoryState: ToastState = { toasts: [] }
 
 function dispatch(action: ToastReducerAction) {
   toastMemoryState = toastReducer(toastMemoryState, action)
-  for (const listener of toastStateListeners) {
-    listener(toastMemoryState)
+  for (const listener of toastStateListeners) listener()
+}
+
+const subscribeToToastState = (onStoreChange: () => void) => {
+  toastStateListeners.add(onStoreChange)
+  return () => {
+    toastStateListeners.delete(onStoreChange)
   }
 }
 
+const getToastStateSnapshot = () => toastMemoryState
+
 function toast(toastOptions: Omit<ToastEntry, 'id'>) {
-  toastIdCounter = (toastIdCounter + 1) % Number.MAX_SAFE_INTEGER
-  const toastId = toastIdCounter.toString()
+  const toastId = crypto.randomUUID()
 
   const dismiss = () => dispatch({ type: toastActionTypes.DISMISS_TOAST, toastId })
 
@@ -150,14 +154,7 @@ function toast(toastOptions: Omit<ToastEntry, 'id'>) {
 }
 
 function useToast() {
-  const [toastState, setToastState] = useState(toastMemoryState)
-
-  useEffect(() => {
-    toastStateListeners.add(setToastState)
-    return () => {
-      toastStateListeners.delete(setToastState)
-    }
-  }, [])
+  const toastState = useSyncExternalStore(subscribeToToastState, getToastStateSnapshot, getToastStateSnapshot)
 
   return {
     ...toastState,

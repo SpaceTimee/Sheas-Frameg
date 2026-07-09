@@ -5,9 +5,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { useAnimatedList } from '@/hooks/use-animated-list'
 import { useLanguage } from '@/lib/i18n/provider'
 import type { VideoJob } from '@/types/video'
-import { ContentSwitch } from './content-switch'
-import { AnimatedHeight } from './animated-height'
-import VideoJobItem from './queue-item'
+import { ContentSwitch } from '@/components/video/content-switch'
+import { AnimatedHeight } from '@/components/video/animated-height'
+import VideoJobItem from '@/components/video/queue-item'
 
 interface QueueCardProps {
   videoJobs: VideoJob[]
@@ -26,7 +26,7 @@ export default function QueueCard({ videoJobs, ...queueItemHandlers }: QueueCard
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-headline text-xl flex items-center gap-2">
+        <CardTitle className="font-headline flex items-center gap-2 text-xl">
           <ListVideo aria-hidden="true" />
           {translate('queueCard.title')}
         </CardTitle>
@@ -37,18 +37,15 @@ export default function QueueCard({ videoJobs, ...queueItemHandlers }: QueueCard
           contentKey={isEmpty ? 'empty' : 'list'}
           renderContent={(key) =>
             key === 'empty' ? (
-              <p className="text-center py-12 text-muted-foreground text-sm">
+              <p className="text-muted-foreground py-12 text-center text-sm">
                 {translate('queueCard.empty')}
               </p>
             ) : (
               <ul className="space-y-6">
-                {animatedItems.map((animatedVideoJob) => (
-                  <li key={animatedVideoJob.id}>
-                    <AnimatedHeight
-                      isOpen={animatedVideoJob.isOpen}
-                      onTransitionEnd={() => handleTransitionEnd(animatedVideoJob.id)}
-                    >
-                      <VideoJobItem videoJob={animatedVideoJob} {...queueItemHandlers} />
+                {animatedItems.map(({ item, isOpen }) => (
+                  <li key={item.id}>
+                    <AnimatedHeight isOpen={isOpen} onTransitionEnd={() => handleTransitionEnd(item.id)}>
+                      <VideoJobItem videoJob={item} {...queueItemHandlers} />
                     </AnimatedHeight>
                   </li>
                 ))}

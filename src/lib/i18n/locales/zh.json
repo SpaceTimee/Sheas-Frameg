@@ -1,5 +1,5 @@
 {
-  "footerText": "Space Time ❤️ Ver. 1.1.2",
+  "footerText": "Space Time ❤️ Ver. {{version}}",
   "header": {
     "homeAriaLabel": "返回 Sheas Frameg 首页",
     "githubAriaLabel": "打开 GitHub 仓库"

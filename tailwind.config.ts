@@ -3,20 +3,11 @@ import animate from 'tailwindcss-animate'
 
 export default {
   darkMode: 'class',
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}'
-  ],
+  content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       screens: {
         md: '455px'
-      },
-      fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
-        code: ['monospace']
       },
       colors: {
         background: 'hsl(var(--background))',

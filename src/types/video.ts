@@ -2,32 +2,32 @@ export type VideoStatus = 'queued' | 'processing' | 'completed' | 'error'
 export type ProcessingErrorType = 'metadata' | 'shared' | 'unknown'
 
 export interface ProcessingError {
-  type: ProcessingErrorType
-  message?: string
+  readonly type: ProcessingErrorType
+  readonly message?: string
 }
 
 export interface VideoJob {
-  id: string
-  file: File
-  customName?: string
-  interpolationFactor: number
-  status: VideoStatus
-  progress: number
-  originalUrl: string
-  processedUrl?: string
-  isPaused: boolean
-  duration?: number
-  fps?: number
-  error?: ProcessingError
+  readonly id: string
+  readonly file: File
+  readonly customName?: string
+  readonly interpolationFactor: number
+  readonly status: VideoStatus
+  readonly progress: number
+  readonly originalUrl: string
+  readonly processedUrl?: string
+  readonly isPaused: boolean
+  readonly duration?: number
+  readonly fps?: number
+  readonly error?: ProcessingError
 }
 
 export interface SelectedVideoFile {
-  id: string
-  file: File
-  customName?: string
-  originalUrl: string
-  isPaused: boolean
-  duration?: number
-  fps?: number
-  error?: boolean
+  readonly id: string
+  readonly file: File
+  readonly customName?: string
+  readonly originalUrl: string
+  readonly isPaused: boolean
+  readonly duration?: number
+  readonly fps?: number
+  readonly error?: boolean
 }

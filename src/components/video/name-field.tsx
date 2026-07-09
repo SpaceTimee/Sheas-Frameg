@@ -48,10 +48,10 @@ function NameField({ displayName, fileName, onRename }: NameFieldProps) {
 
   if (isEditing) {
     return (
-      <div className="flex items-center gap-1 min-w-0 max-w-full">
-        <div className="flex items-center min-w-0 max-w-full">
-          <div className="relative inline-flex min-w-2 min-h-[1.5em] items-center overflow-hidden">
-            <span className="font-medium invisible whitespace-pre leading-[1.5]" aria-hidden="true">
+      <div className="flex max-w-full min-w-0 items-center gap-1">
+        <div className="flex max-w-full min-w-0 items-center">
+          <div className="relative inline-flex min-h-[1.5em] min-w-2 items-center overflow-hidden">
+            <span className="invisible leading-[1.5] font-medium whitespace-pre" aria-hidden="true">
               {draftStem}
             </span>
             <input
@@ -61,7 +61,7 @@ function NameField({ displayName, fileName, onRename }: NameFieldProps) {
               spellCheck={false}
               autoComplete="off"
               enterKeyHint="done"
-              className="font-medium text-center bg-transparent border-b border-border focus:border-primary focus:outline-none px-0 py-0 absolute inset-0 w-full"
+              className="border-border focus:border-primary absolute inset-0 w-full border-b bg-transparent px-0 py-0 text-center font-medium focus:outline-none"
               aria-label={translate('nameField.editAriaLabel')}
               onChange={(changeEvent) => setDraftStem(changeEvent.target.value)}
               onBlur={confirmRename}
@@ -76,27 +76,27 @@ function NameField({ displayName, fileName, onRename }: NameFieldProps) {
               }}
             />
           </div>
-          {extension && <span className="font-medium text-muted-foreground shrink-0">{extension}</span>}
+          {extension && <span className="text-muted-foreground shrink-0 font-medium">{extension}</span>}
         </div>
-        <div className="flex items-center gap-0.5 shrink-0">
+        <div className="flex shrink-0 items-center gap-0.5">
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6"
+            className="size-6"
             aria-label={translate('nameField.confirmAriaLabel')}
             onClick={confirmRename}
           >
-            <Check className="h-4 w-4 text-muted-foreground hover:text-primary" aria-hidden="true" />
+            <Check className="text-muted-foreground hover:text-primary size-4" aria-hidden="true" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6"
+            className="size-6"
             aria-label={translate('nameField.cancelAriaLabel')}
             onClick={cancelRename}
             onMouseDown={(mouseDownEvent) => mouseDownEvent.preventDefault()}
           >
-            <X className="h-4 w-4 text-muted-foreground hover:text-destructive" aria-hidden="true" />
+            <X className="text-muted-foreground hover:text-destructive size-4" aria-hidden="true" />
           </Button>
         </div>
       </div>
@@ -106,19 +106,19 @@ function NameField({ displayName, fileName, onRename }: NameFieldProps) {
   const { stem } = splitFileName(displayName)
 
   return (
-    <div className="flex items-center gap-1 min-w-0 max-w-full">
-      <p className="font-medium min-w-0 flex items-baseline gap-0">
-        <span className="overflow-hidden whitespace-nowrap text-clip min-w-0 block">{stem}</span>
+    <div className="flex max-w-full min-w-0 items-center gap-1">
+      <p className="flex min-w-0 items-baseline gap-0 font-medium">
+        <span className="block min-w-0 overflow-hidden text-clip whitespace-nowrap">{stem}</span>
         {extension && <span className="text-muted-foreground shrink-0">{extension}</span>}
       </p>
       <Button
         variant="ghost"
         size="icon"
-        className="h-6 w-6 shrink-0"
+        className="size-6 shrink-0"
         aria-label={translate('nameField.renameAriaLabel')}
         onClick={startRename}
       >
-        <Pencil className="h-3.5 w-3.5 text-muted-foreground hover:text-primary" aria-hidden="true" />
+        <Pencil className="text-muted-foreground hover:text-primary size-3.5" aria-hidden="true" />
       </Button>
     </div>
   )

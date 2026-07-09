@@ -1,6 +1,6 @@
 import type { FFmpeg, ProgressEventCallback } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util'
-import MediaInfoFactory, { isTrackType } from 'mediainfo.js'
+import MediaInfoFactory, { isTrackType, type MediaInfo } from 'mediainfo.js'
 import { insertFilenameSuffix } from '@/lib/utils'
 import type { VideoJob } from '@/types/video'
 
@@ -14,36 +14,39 @@ interface ProcessingCancellationRef {
 }
 
 const getFiniteMediaNumber = (mediaNumber: number | undefined, fallbackValue: number) =>
-  mediaNumber === undefined || !Number.isFinite(mediaNumber) ? fallbackValue : mediaNumber
+  typeof mediaNumber === 'number' && Number.isFinite(mediaNumber) ? mediaNumber : fallbackValue
 
-export async function getVideoMetadata(videoFile: File | Blob): Promise<VideoMetadata> {
-  const mediaInfoReader = await MediaInfoFactory({
+let mediaInfoPromise: Promise<MediaInfo<'object'>> | null = null
+
+const getMediaInfo = (): Promise<MediaInfo<'object'>> => {
+  mediaInfoPromise ??= MediaInfoFactory({
     format: 'object',
     locateFile: () => '/MediaInfoModule.wasm'
   })
+  return mediaInfoPromise
+}
 
-  try {
-    const metadataResult = await mediaInfoReader.analyzeData(
-      () => videoFile.size,
-      async (chunkSize, offset) =>
-        new Uint8Array(await videoFile.slice(offset, offset + chunkSize).arrayBuffer())
-    )
+export async function getVideoMetadata(videoFile: File | Blob): Promise<VideoMetadata> {
+  const mediaInfoReader = await getMediaInfo()
 
-    const videoTrack = metadataResult.media?.track.find((mediaTrack) => isTrackType(mediaTrack, 'Video'))
+  const metadataResult = await mediaInfoReader.analyzeData(
+    () => videoFile.size,
+    async (chunkSize, offset) =>
+      new Uint8Array(await videoFile.slice(offset, offset + chunkSize).arrayBuffer())
+  )
 
-    if (!videoTrack) throw new Error('No video track found')
+  const videoTrack = metadataResult.media?.track.find((mediaTrack) => isTrackType(mediaTrack, 'Video'))
 
-    const duration = getFiniteMediaNumber(videoTrack.Duration, 0)
-    const fps = getFiniteMediaNumber(videoTrack.FrameRate, 30)
+  if (!videoTrack) throw new Error('No video track found')
 
-    if (duration <= 0 || fps <= 0) throw new Error('Invalid video metadata')
+  const duration = getFiniteMediaNumber(videoTrack.Duration, 0)
+  const fps = getFiniteMediaNumber(videoTrack.FrameRate, 30)
 
-    return {
-      duration,
-      fps
-    }
-  } finally {
-    mediaInfoReader.close()
+  if (duration <= 0 || fps <= 0) throw new Error('Invalid video metadata')
+
+  return {
+    duration,
+    fps
   }
 }
 

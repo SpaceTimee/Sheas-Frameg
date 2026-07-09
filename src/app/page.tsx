@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { Loader2 } from 'lucide-react'
+import { LoaderCircle } from 'lucide-react'
 import Header from '@/components/layout/header'
 import Footer from '@/components/layout/footer'
 import { useLanguage } from '@/lib/i18n/provider'
@@ -18,8 +18,8 @@ const VideoProcessor = dynamic(() => import('@/components/video/video-processor'
         aria-busy="true"
         aria-live="polite"
       >
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
+        <div className="text-muted-foreground flex items-center gap-2">
+          <LoaderCircle className="size-6 animate-spin" aria-hidden="true" />
           <p>{translate('videoProcessor.loading')}</p>
         </div>
       </div>
@@ -29,9 +29,9 @@ const VideoProcessor = dynamic(() => import('@/components/video/video-processor'
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="bg-background flex min-h-screen flex-col">
       <Header />
-      <main className="container mx-auto p-4 md:p-8 flex flex-1 flex-col">
+      <main className="container mx-auto flex flex-1 flex-col p-4 md:p-8">
         <VideoProcessor />
       </main>
       <Footer />

@@ -33,13 +33,13 @@ export function AnimatedHeight({ isOpen, onTransitionEnd, innerClassName, childr
 
   return (
     <div
-      className="grid ease-out transition-[grid-template-rows] duration-300"
+      className="grid transition-[grid-template-rows] duration-300 ease-out"
       style={{ gridTemplateRows: isExpanded ? '1fr' : '0fr' }}
       onTransitionEnd={(transitionEndEvent) => {
         if (transitionEndEvent.propertyName === 'grid-template-rows') onTransitionEnd?.()
       }}
     >
-      <div className="overflow-hidden min-h-0">
+      <div className="min-h-0 overflow-hidden">
         <div className={innerClassName}>{children}</div>
       </div>
     </div>

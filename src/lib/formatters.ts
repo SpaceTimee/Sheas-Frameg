@@ -2,7 +2,7 @@ import type { ProcessingError, VideoStatus } from '@/types/video'
 import type { Translator } from '@/lib/i18n/provider'
 
 const BYTE_UNIT_BASE = 1024
-const BYTE_UNITS = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+const BYTE_UNITS = ['Bytes', 'KB', 'MB', 'GB', 'TB'] as const
 
 export const formatBytes = (bytes: number, decimalPlaces = 2) => {
   if (!Number.isFinite(bytes) || bytes <= 0) return '0 Bytes'

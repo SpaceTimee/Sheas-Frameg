@@ -15,19 +15,19 @@ export default function FileUploader({ videoFileInputRef, onVideoFilesChange }: 
   return (
     <label
       htmlFor="video-file-input"
-      className="flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-lg cursor-pointer border-border hover:border-primary/50 focus-visible-within:border-primary/50 focus-visible-within:outline-none focus-visible-within:ring-2 focus-visible-within:ring-ring focus-visible-within:ring-offset-2 bg-background hover:bg-accent/10 transition-colors"
+      className="focus-visible-within:border-primary/50 focus-visible-within:outline-none focus-visible-within:ring-2 focus-visible-within:ring-ring focus-visible-within:ring-offset-2 border-border bg-background hover:border-primary/50 hover:bg-accent/10 flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors"
       onDragOver={(dragEvent) => dragEvent.preventDefault()}
       onDrop={(dropEvent) => {
         dropEvent.preventDefault()
         onVideoFilesChange(dropEvent.dataTransfer.files)
       }}
     >
-      <FileVideo className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
-      <p className="mt-4 text-sm text-center text-muted-foreground">
-        <span className="font-semibold text-primary">{translate('jobCard.upload.click')}</span>{' '}
+      <FileVideo className="text-muted-foreground size-12" aria-hidden="true" />
+      <p className="text-muted-foreground mt-4 text-center text-sm">
+        <span className="text-primary font-semibold">{translate('jobCard.upload.click')}</span>{' '}
         {translate('jobCard.upload.drag')}
       </p>
-      <p id="video-file-formats" className="text-xs text-center text-muted-foreground">
+      <p id="video-file-formats" className="text-muted-foreground text-center text-xs">
         {translate('jobCard.upload.formats')}
       </p>
       <input

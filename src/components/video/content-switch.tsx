@@ -17,7 +17,7 @@ export function ContentSwitch<K extends string>({ contentKey, renderContent }: C
 
   return (
     <div
-      className="grid ease-out transition-[grid-template-rows] duration-300"
+      className="grid transition-[grid-template-rows] duration-300 ease-out"
       style={{ gridTemplateRows: phase === 'expanded' ? '1fr' : '0fr' }}
       onTransitionEnd={(transitionEndEvent) => {
         if (transitionEndEvent.propertyName !== 'grid-template-rows') return
@@ -26,7 +26,7 @@ export function ContentSwitch<K extends string>({ contentKey, renderContent }: C
         setPhase('expanded')
       }}
     >
-      <div className="overflow-hidden min-h-0">{renderContent(displayedKey)}</div>
+      <div className="min-h-0 overflow-hidden">{renderContent(displayedKey)}</div>
     </div>
   )
 }

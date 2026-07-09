@@ -5,7 +5,7 @@ function Card({ ref, className, ...props }: HTMLAttributes<HTMLDivElement> & { r
   return (
     <div
       ref={ref}
-      className={mergeClassNames('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
+      className={mergeClassNames('bg-card text-card-foreground rounded-lg border shadow-sm', className)}
       {...props}
     />
   )
@@ -27,7 +27,7 @@ function CardTitle({
   return (
     <h3
       ref={ref}
-      className={mergeClassNames('text-2xl font-semibold leading-none tracking-tight', className)}
+      className={mergeClassNames('text-2xl leading-none font-semibold tracking-tight', className)}
       {...props}
     />
   )
@@ -38,7 +38,7 @@ function CardDescription({
   className,
   ...props
 }: HTMLAttributes<HTMLParagraphElement> & { ref?: Ref<HTMLParagraphElement> }) {
-  return <p ref={ref} className={mergeClassNames('text-sm text-muted-foreground', className)} {...props} />
+  return <p ref={ref} className={mergeClassNames('text-muted-foreground text-sm', className)} {...props} />
 }
 
 function CardContent({

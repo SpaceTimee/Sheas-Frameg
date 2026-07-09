@@ -29,7 +29,7 @@ function VideoPreview({ videoUrl, isPaused, onTogglePlayPause }: VideoPreviewPro
   return (
     <button
       type="button"
-      className="relative shrink-0 cursor-pointer self-center rounded-md border-none bg-transparent p-0 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:self-auto"
+      className="ring-offset-background focus-visible:ring-ring relative shrink-0 cursor-pointer self-center rounded-md border-none bg-transparent p-0 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none sm:self-auto"
       aria-label={translate(isPaused ? 'videoPreview.playAriaLabel' : 'videoPreview.pauseAriaLabel')}
       onClick={onTogglePlayPause}
     >
@@ -40,7 +40,7 @@ function VideoPreview({ videoUrl, isPaused, onTogglePlayPause }: VideoPreviewPro
         loop
         muted
         preload="metadata"
-        className="h-20 w-32 object-cover rounded-md bg-black"
+        className="h-20 w-32 rounded-md bg-black object-cover"
         aria-hidden="true"
         tabIndex={-1}
         onLoadedData={(loadedDataEvent) => {
@@ -49,10 +49,10 @@ function VideoPreview({ videoUrl, isPaused, onTogglePlayPause }: VideoPreviewPro
       />
       {isPaused && (
         <div
-          className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-md"
+          className="absolute inset-0 flex items-center justify-center rounded-md bg-black/50 backdrop-blur-sm"
           aria-hidden="true"
         >
-          <EyeOff className="h-8 w-8 text-white/80" />
+          <EyeOff className="size-8 text-white/80" />
         </div>
       )}
     </button>

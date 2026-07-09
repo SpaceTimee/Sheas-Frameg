@@ -18,8 +18,8 @@ export function useAnimatedList<T extends { id: string }>(items: T[]) {
   if (prevItems !== items) setPrevItems(items)
 
   const animatedItems = [
-    ...items.map((item) => ({ ...item, isOpen: true })),
-    ...mergedLeaving.map((item) => ({ ...item, isOpen: false }))
+    ...items.map((item) => ({ item, isOpen: true as const })),
+    ...mergedLeaving.map((item) => ({ item, isOpen: false as const }))
   ]
 
   const handleTransitionEnd = (id: string) =>

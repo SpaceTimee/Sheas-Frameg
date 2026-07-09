@@ -1,8 +1,8 @@
 'use client'
 
 import { useVideoProcessor } from '@/hooks/use-video-processor'
-import JobCard from './job-card'
-import QueueCard from './queue-card'
+import JobCard from '@/components/video/job-card'
+import QueueCard from '@/components/video/queue-card'
 
 export default function VideoProcessor() {
   const {

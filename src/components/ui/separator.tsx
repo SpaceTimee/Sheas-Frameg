@@ -19,7 +19,7 @@ function Separator({
       orientation={orientation}
       decorative={decorative}
       className={mergeClassNames(
-        'shrink-0 bg-border',
+        'bg-border shrink-0',
         orientation === 'horizontal' ? 'h-px w-full' : 'h-full w-px',
         className
       )}
